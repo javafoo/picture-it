@@ -11,11 +11,13 @@ const LABEL: Record<Skeleton, string> = {
   case_study: "a story with a result",
   statement: "a position, argued",
   tutorial: "a walk-through",
+  lookbook: "a lookbook",
 };
 
 export function pickSkeleton(brief: string): SkeletonPick {
   const text = brief.toLowerCase();
   const pick = (id: Skeleton, why: string): SkeletonPick => ({ id, label: LABEL[id], why });
+  if (/\b(lookbook|new in|new drop|drop|outfits?|looks)\b/.test(text)) return pick("lookbook", "It shows a piece, so each slide is one look.");
   if (/\b(how to|how i|step|steps|walk ?through|tutorial|set ?up|guide)\b/.test(text)) return pick("tutorial", "You asked how to do something, so each slide is one step.");
   if (/\b(\d+|three|four|five|six|seven|ten)\s+(things|ways|tips|mistakes|lessons|reasons|rules|signs|habits)\b|\b(tips|mistakes|lessons|reasons)\b/.test(text)) {
     return pick("list", "You named a set of things, so each slide is one of them.");

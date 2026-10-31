@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useActionState, useRef, useState } from "react";
 
+import { animateAction, type ActionState } from "@/app/actions";
+import { createCarouselAction } from "@/app/carousels/actions";
 import { startLooksAction, type StudioState } from "@/app/studio/actions";
 import { GARMENT_CATEGORIES, GARMENT_LABEL, type GarmentCategory } from "@/ai/youcam";
 import { downscale } from "@/components/library/upload-client";
@@ -19,7 +21,7 @@ import { MAX_LOOKS_PER_SHOOT, SCENES, SCENE_KEYS, type SceneKey } from "@/tryon/
 
 const src = (id: string) => `/api/media/${id}`;
 
-export function Studio({ shelves, credits }: { shelves: StudioShelves; credits: { scene: number; photo: number } }) {
+export function Studio({ shelves, credits }: { shelves: StudioShelves; credits: { scene: number; photo: number; clip: number } }) {
   const router = useRouter();
   const [piece, setPiece] = useState<string | null>(shelves.pieces[0]?.id ?? null);
   const chosen = shelves.pieces.find((item) => item.id === piece);
@@ -144,7 +146,7 @@ export function Studio({ shelves, credits }: { shelves: StudioShelves; credits: 
         </section>
       ) : null}
 
-      <Looks looks={shelves.looks} pieces={shelves.pieces} />
+      <Looks looks={shelves.looks} pieces={shelves.pieces} clipCredits={credits.clip} />
     </div>
   );
 }
@@ -200,38 +202,101 @@ function AddPiece({ onAdded, category }: { onAdded: (id: string) => void; catego
   );
 }
 
-function Looks({ looks, pieces }: { looks: StudioShelves["looks"]; pieces: StudioShelves["pieces"] }) {
+function Looks({ looks, pieces, clipCredits }: { looks: StudioShelves["looks"]; pieces: StudioShelves["pieces"]; clipCredits: number }) {
   const [before, setBefore] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
+  const [lookbook, makeLookbook, making] = useActionState<ActionState, FormData>(createCarouselAction, null);
+  const [lookbookId] = useState(() => crypto.randomUUID());
   if (!looks.length) return null;
+  const first = looks.find((look) => look.id === picked[0]);
+  const piece = first ? pieces.find((item) => item.id === first.garmentMediaId) : undefined;
+
+  function toggle(id: string) {
+    setPicked((current) => (current.includes(id) ? current.filter((item) => item !== id) : current.length >= 4 ? current : [...current, id]));
+  }
+
   return (
     <section>
-      <div className="flex items-end justify-between gap-4 border-b border-line pb-3">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-3">
         <h2 className="font-display text-3xl text-ink">Your looks</h2>
-        <p className="text-xs text-muted">Tap a look to see the before.</p>
+        <p className="text-xs text-muted">Tap a look to see the before. Tick two to four to make a lookbook post.</p>
       </div>
+
+      {picked.length >= 2 && (
+        <form action={makeLookbook} className="sticky top-2 z-10 mt-4 flex flex-wrap items-center justify-between gap-3 border border-ink bg-surface px-4 py-3">
+          <input type="hidden" name="requestId" value={lookbookId} />
+          <input type="hidden" name="topic" value={`New in: ${piece?.name ?? "the new piece"}. ${picked.length} ways to wear it.`} />
+          <input type="hidden" name="format" value="carousel" />
+          <input type="hidden" name="layout" value="photos" />
+          <input type="hidden" name="skeleton" value="lookbook" />
+          <input type="hidden" name="kit" value="serif" />
+          {[...picked, ...(piece ? [piece.id] : [])].map((id) => <input key={id} type="hidden" name="photos" value={id} />)}
+          <span className="text-sm text-ink">{picked.length} looks picked</span>
+          <button type="submit" disabled={making} className={buttonClass("primary", "md")}>{making ? "Starting…" : "Make a lookbook post · free"}</button>
+          {lookbook && !lookbook.ok && <p role="alert" className="w-full text-sm text-danger">{lookbook.message}</p>}
+        </form>
+      )}
+
       <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4">
         {looks.map((look) => {
-          const piece = pieces.find((item) => item.id === look.garmentMediaId);
+          const item = pieces.find((candidate) => candidate.id === look.garmentMediaId);
           const showBefore = before === look.id && look.modelMediaId;
           return (
             <figure key={look.id}>
-              <button type="button" onClick={() => setBefore(before === look.id ? null : look.id)} className="relative block w-full overflow-hidden bg-sunken" aria-label={showBefore ? "Show the look" : "Show the before"}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src(showBefore ? look.modelMediaId! : look.id)} alt={showBefore ? "Before: your model" : `${piece?.name ?? "The piece"}, on your model`} className="aspect-[4/5] w-full object-cover" />
-                <span className="absolute top-2 left-2 bg-surface/90 px-2 py-0.5 text-2xs tracking-[0.14em] text-ink uppercase">{showBefore ? "Before" : "After"}</span>
-                {piece && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={src(piece.id)} alt="" className="absolute right-2 bottom-2 size-14 bg-surface object-contain p-1 shadow ring-1 ring-line" />
-                )}
-              </button>
+              <div className="relative">
+                <button type="button" onClick={() => setBefore(before === look.id ? null : look.id)} className="relative block w-full overflow-hidden bg-sunken" aria-label={showBefore ? "Show the look" : "Show the before"}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src(showBefore ? look.modelMediaId! : look.id)} alt={showBefore ? "Before: your model" : `${item?.name ?? "The piece"}, on your model`} className="aspect-[4/5] w-full object-cover" />
+                  <span className="absolute top-2 left-2 bg-surface/90 px-2 py-0.5 text-2xs tracking-[0.14em] text-ink uppercase">{showBefore ? "Before" : "After"}</span>
+                  {item && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={src(item.id)} alt="" className="absolute right-2 bottom-2 size-14 bg-surface object-contain p-1 shadow ring-1 ring-line" />
+                  )}
+                </button>
+                <label className="absolute top-2 right-2 flex size-8 cursor-pointer items-center justify-center bg-surface/90" title="Pick for a lookbook post">
+                  <input type="checkbox" checked={picked.includes(look.id)} onChange={() => toggle(look.id)} aria-label="Pick for a lookbook post" />
+                </label>
+              </div>
               <figcaption className="mt-2 flex items-center justify-between gap-2">
-                <span className="truncate text-sm text-ink">{piece?.name ?? "Look"}</span>
+                <span className="truncate text-sm text-ink">{item?.name ?? "Look"}</span>
                 <a href={`/api/media/${look.id}?download=1`} className="shrink-0 text-xs text-ink-soft underline-offset-4 hover:underline">Download</a>
               </figcaption>
+              <Animate lookId={look.id} credits={clipCredits} />
             </figure>
           );
         })}
       </div>
     </section>
+  );
+}
+
+/* A look, moving: a five-second vertical clip for Reels and ads, made from the
+   look with the video model the rest of the app uses. */
+const MOTION = "She turns slowly to one side and back to show how the outfit moves and falls, then smiles at the camera. The camera stays still.";
+
+function Animate({ lookId, credits }: { lookId: string; credits: number }) {
+  const [state, action, pending] = useActionState<ActionState, FormData>(animateAction, null);
+  const [requestId] = useState(() => crypto.randomUUID());
+  if (state?.ok && state.jobId) {
+    return (
+      <JobStatus jobId={state.jobId} workingLabel="Making the video… two to four minutes." pollMs={4000} refreshOnFinish={false} className="mt-2">
+        {(job) => (job.status === "completed" && job.mediaIds[0] ? (
+          <video src={src(job.mediaIds[0])} controls playsInline loop className="mt-2 aspect-[9/16] w-full bg-ink object-cover" />
+        ) : null)}
+      </JobStatus>
+    );
+  }
+  return (
+    <form action={action} className="mt-1">
+      <input type="hidden" name="requestId" value={requestId} />
+      <input type="hidden" name="image" value={lookId} />
+      <input type="hidden" name="motion" value={MOTION} />
+      <input type="hidden" name="model" value="omni" />
+      <input type="hidden" name="aspectRatio" value="9:16" />
+      <button type="submit" disabled={pending} className="text-xs text-ink-soft underline-offset-4 hover:underline disabled:text-muted">
+        {pending ? "Starting…" : `Animate for Reels · ${creditWord(credits)}`}
+      </button>
+      {state && !state.ok && <p role="alert" className="mt-1 text-xs text-danger">{state.message}</p>}
+    </form>
   );
 }

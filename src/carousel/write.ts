@@ -18,6 +18,8 @@ export const SKELETONS = {
     "One story with a result. Cover states the claim. Then: where it started, the thing that changed, the two or three mechanics behind it, what it produced. A photo slide for the turn and for the belief line.",
   statement:
     "A position, argued. Cover is the statement itself. Then: who it is for, what most people do instead, what you do, what that means for the reader. A photo slide for the line you want quoted.",
+  lookbook:
+    "A product drop. The opening slide names the piece and the one reason to want it. Then one look per slide: where she is wearing it and one short line on how to style it. Close on where to get it. No lessons, no claims beyond what the piece is.",
   tutorial:
     "A walk-through. Photo cover shows the outcome. Then the steps in order, one per paper slide, each a short title and one instruction sentence. A photo slide before the close.",
 } as const;

@@ -16,7 +16,11 @@ export const dynamic = "force-dynamic";
    a try-on, a minute or two in all, inside this route's time limit. */
 export const maxDuration = 300;
 
-const CREDITS = { scene: creditsFor({ kind: "tryon", withPhoto: true }), photo: creditsFor({ kind: "tryon", withPhoto: false }) };
+const CREDITS = {
+  scene: creditsFor({ kind: "tryon", withPhoto: true }),
+  photo: creditsFor({ kind: "tryon", withPhoto: false }),
+  clip: creditsFor({ kind: "clip", model: "omni", seconds: 5 }),
+};
 
 /* The Studio: the product. A piece from her shop, on her model, in the places
    she picks. No photoshoot. */

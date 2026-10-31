@@ -25,6 +25,10 @@ export const SKELETON_LABEL: Record<Skeleton, { name: string; line: string }> = 
     name: "Tutorial",
     line: "A walk-through: the outcome first, then the steps in order, one per slide.",
   },
+  lookbook: {
+    name: "Lookbook",
+    line: "A product drop: the piece first, then one look per slide and how to wear it.",
+  },
 };
 
 /** Where the words sit, in the same voice. */

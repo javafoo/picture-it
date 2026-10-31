@@ -33,7 +33,7 @@ export type PhotoChoice = { id: string; url: string; kind: "image" | "reference"
 
 export type TopicChoice = { topic: string; why: string };
 
-const SKELETONS: Skeleton[] = ["list", "case_study", "statement", "tutorial"];
+const SKELETONS: Skeleton[] = ["lookbook", "list", "case_study", "statement", "tutorial"];
 const COLOURS = [
   { key: "paper", label: "Paper" },
   { key: "ink", label: "Ink" },
