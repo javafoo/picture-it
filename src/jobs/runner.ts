@@ -3,7 +3,7 @@ import { weekStep, type WeekDeps } from "@/week/step";
 
 import type { JobProviders, StepOutcome } from "./providers";
 import type { JobStore } from "./store";
-import type { AgentJobInput, CarouselJobInput, ClipJobInput, ImageJobInput, JobKind, JobRecord, ReelJobInput, TextPhotoJobInput, WeekJobInput } from "./types";
+import type { AgentJobInput, CarouselJobInput, ClipJobInput, ImageJobInput, JobKind, JobRecord, ReelJobInput, TextPhotoJobInput, TryOnJobInput, WeekJobInput } from "./types";
 
 /* One step of one job.
 
@@ -76,6 +76,10 @@ export async function runStep(job: JobRecord, context: StepContext): Promise<Ste
     case "text_photo":
       // A canvas and one cached face look: seconds, in one go.
       return { done: true, outcome: await context.providers.renderTextPhoto(job, job.input as TextPhotoJobInput) };
+    case "tryon":
+      /* A photo (when one is needed) and a try-on that answered in 13 seconds
+         when tested: a minute or two at most, so it runs in one go like a photo. */
+      return { done: true, outcome: await context.providers.tryOn(job, job.input as TryOnJobInput) };
     case "agent":
       /* One step of the run per poll: write, decide, or start or check a
          child job. The children are ordinary jobs and pay their own way. */
@@ -156,6 +160,7 @@ export function plainMessage(error: unknown): string {
   const raw = error instanceof Error ? error.message : String(error);
   if (/^Gemini/.test(raw)) return "The image service could not finish this one.";
   if (/^Higgsfield/.test(raw) || /^Omni/.test(raw)) return "The video service could not finish this one.";
+  if (/^YouCam/.test(raw)) return "The try-on service could not finish this one.";
   if (/Upload failed/.test(raw)) return "The photo could not be sent to the video service.";
   if (/^No usable ffmpeg/.test(raw) || /^ffmpeg could not/.test(raw)) return "The video could not be rendered.";
   if (/Media not found/.test(raw)) return "That file is not in your library any more.";

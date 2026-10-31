@@ -4,6 +4,8 @@ import { join } from "node:path";
 
 import { clipPriceUsd, CLIP_ENDPOINT } from "@/ai/clips";
 import { downloadOmniClip, forgetOmniClip, omniClipStatus, submitOmniClip } from "@/ai/omni";
+import { downloadTryOn, plainTryOnError, startTryOn, tryOnStatus, TRYON_USD, uploadToYouCam } from "@/ai/youcam";
+import { modelPhotoIdea, sceneKey } from "@/tryon/looks";
 import { requireClipAspectRatio, requireMadeClipModel, requireRatioForModel } from "@/content/clip-options";
 import { describeProblems } from "@/carousel/check";
 import { fitPhotos } from "@/carousel/fit";
@@ -42,7 +44,7 @@ import type { FaceZone } from "@/reel/placement";
 
 import type { JobProviders, StepOutcome, SubmittedClip } from "./providers";
 import { makeTextPhoto, type TextPhotoDeps } from "./text-photo";
-import { clipModelOf, imageAspectOf, imageModelOf, type CarouselJobInput, type ClipJobInput, type ImageJobInput, type JobRecord, type ReelJobInput, type TextPhotoJobInput } from "./types";
+import { clipModelOf, imageAspectOf, imageModelOf, type CarouselJobInput, type ClipJobInput, type ImageJobInput, type JobRecord, type ReelJobInput, type TextPhotoJobInput, type TryOnJobInput } from "./types";
 
 /* The real work. This is what used to sit inside the server actions, moved
    behind the JobProviders interface so a request no longer waits for it.
@@ -460,6 +462,81 @@ export const liveProviders: JobProviders = {
 
   async renderTextPhoto(job, input: TextPhotoJobInput): Promise<StepOutcome> {
     return makeTextPhoto(job, input, liveTextPhotoDeps);
+  },
+
+  async tryOn(job, input: TryOnJobInput): Promise<StepOutcome> {
+    const { avatar, lock } = await lockedAvatar(job);
+    const garment = await getMedia(job.userId, input.garmentMediaId);
+    if (!garment || garment.kind !== "image") throw new Error("That piece is not in your library any more.");
+    const folderId = input.folderId ?? null;
+
+    /* The model: a photo of hers she picked, or a new one made now in the
+       pose the try-on needs. The new one is kept as the look's "before" but
+       out of the library listing, where it would read as a duplicate. */
+    let modelId = input.modelMediaId ?? null;
+    let photoUsd = 0;
+    if (modelId) {
+      const row = await getMedia(job.userId, modelId);
+      if (!row || row.kind !== "image" || (row.avatarId && row.avatarId !== avatar.id)) throw new Error("That model photo is not in your library any more.");
+    } else {
+      const scene = sceneKey(input.scene);
+      if (!scene) throw new Error("Pick where the look is shot.");
+      const references = await referencesFor(job.userId, avatar.id);
+      await requireScreenedPhotos(job.userId, references);
+      const idea = modelPhotoIdea(scene);
+      const { kept, costUsd } = await generateSceneTakes({
+        references: references.map((reference) => reference.image),
+        lock,
+        idea,
+        shot: "friend",
+        aspectRatio: "4:5",
+        maxTakes: 1,
+        label: `tryon:${avatar.id}`,
+      });
+      const before = await saveMedia(job.userId, {
+        kind: "image", avatarId: avatar.id, folderId, ...shapeOf(kept.image.data), data: kept.image.data, contentType: kept.image.mimeType,
+        meta: { idea, shot: "friend", prompt: kept.prompt, verdict: kept.verdict, keep: false, role: "tryon_model", scene, jobId: job.id },
+      });
+      modelId = before.id;
+      photoUsd = costUsd;
+    }
+
+    const upload = async (mediaId: string, name: string) => {
+      const row = await getMedia(job.userId, mediaId);
+      if (!row) throw new Error("Media not found");
+      return uploadToYouCam(await readMedia(job.userId, mediaId), row.contentType, `${name}.${row.contentType === "image/png" ? "png" : "jpg"}`);
+    };
+    const [personFileId, garmentFileId] = await Promise.all([upload(modelId, "model"), upload(garment.id, "piece")]);
+    const taskId = await startTryOn({ personFileId, garmentFileId, category: input.category });
+
+    // Asked every three seconds; it answered in 13 when tested, and three minutes is the ceiling.
+    let url: string | null = null;
+    for (let waited = 0; waited < 180_000 && !url; waited += 3000) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      const state = await tryOnStatus(taskId);
+      if (state.state === "failed") {
+        console.warn(`tryon ${job.id}: YouCam says ${state.code}`);
+        throw new Error(plainTryOnError(state.code));
+      }
+      if (state.state === "completed") url = state.url;
+    }
+    if (!url) throw new Error("The try-on service did not finish in three minutes. Nothing was charged.");
+
+    const data = await downloadTryOn(url);
+    const look = await saveMedia(job.userId, {
+      kind: "image", avatarId: avatar.id, folderId, ...shapeOf(data), data, contentType: sniffImageType(data) ?? "image/jpeg",
+      meta: {
+        source: "tryon", keep: true, jobId: job.id, taskId,
+        garmentMediaId: garment.id, modelMediaId: modelId, category: input.category,
+        ...(input.scene ? { scene: input.scene } : {}),
+      },
+    });
+    return {
+      mediaIds: [look.id],
+      message: "Your look is ready. It is in your library.",
+      costUsd: TRYON_USD + photoUsd,
+      meta: { modelMediaId: modelId, garmentMediaId: garment.id, taskId },
+    };
   },
 
 

@@ -5,13 +5,14 @@ import type { Layout } from "@/carousel/spec";
 import { DEFAULT_CLIP_MODEL, type ClipAspectRatio, type ClipModel } from "@/content/clip-options";
 import { DEFAULT_IMAGE_MODEL, normalizeImageAspect, type ImageAspect, type ImageModel } from "@/content/image-options";
 import type { TextSize, TextStyle } from "@/content/text-styles";
+import type { GarmentCategory } from "@/ai/youcam";
 import type { ShotType } from "@/style/house-style";
 
 /* What a job is, in one place. `src/db/schema.ts` owns the columns; this owns
    the shape of the two jsonb blobs (`input`, `output`) and the view the API
    returns, because neither is typed by the schema. */
 
-export type JobKind = "image" | "clip" | "reel" | "carousel" | "agent" | "text_photo" | "week";
+export type JobKind = "image" | "clip" | "reel" | "carousel" | "agent" | "text_photo" | "week" | "tryon";
 export type JobStatus = "queued" | "running" | "completed" | "failed";
 
 /** The one free photo an account gets. The only value the marker may hold. */
@@ -239,13 +240,34 @@ export interface TextPhotoJobInput {
 }
 
 /**
+ * One look: a piece from her shop, tried on the model with YouCam.
+ *
+ * The model is either a photo already in her library or a new one made first
+ * from `scene`: standing, facing the camera, in plain clothes, which is what
+ * the try-on needs. Both ids are re-checked as hers inside the job. The new
+ * photo is kept beside the result as the "before".
+ */
+export interface TryOnJobInput {
+  kind: "tryon";
+  /** The product photo, uploaded to her library as a piece. */
+  garmentMediaId: string;
+  category: GarmentCategory;
+  /** A photo of the model to dress. */
+  modelMediaId?: string;
+  /** Where to photograph her first, when no model photo is given. */
+  scene?: string;
+  /** The library folder the look lands in. Checked as hers before it gets here. */
+  folderId?: string | null;
+}
+
+/**
  * The agent: one chat message carried out as a run of child jobs. It is free
  * itself (writing and deciding are in the plan) and every paid thing it does
  * is a child job with its own price. The shape lives in `src/agent/plan.ts`.
  */
 export type { AgentJobInput, WeekJobInput };
 
-export type JobInput = ImageJobInput | ClipJobInput | ReelJobInput | CarouselJobInput | AgentJobInput | TextPhotoJobInput | WeekJobInput;
+export type JobInput = ImageJobInput | ClipJobInput | ReelJobInput | CarouselJobInput | AgentJobInput | TextPhotoJobInput | WeekJobInput | TryOnJobInput;
 
 /**
  * What is actually stored in `jobs.input`.
@@ -345,5 +367,7 @@ export function pricingAction(input: JobInput): Action {
     // The week's own calls are words; the posts it makes are agent runs that pay their own way.
     case "week":
       return { kind: "text" };
+    case "tryon":
+      return { kind: "tryon", withPhoto: !input.modelMediaId };
   }
 }

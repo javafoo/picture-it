@@ -159,7 +159,7 @@ export const jobs = pgTable("jobs", {
   avatarId: uuid("avatar_id").references(() => avatars.id, { onDelete: "cascade" }),
   /* "agent" is a chat request carried out as a run of the other kinds: it costs nothing itself and its children pay their own way. */
   /* "text_photo" is her words drawn on one of her photos (free, canvas only). Both are TypeScript-only values: the column is plain text. */
-  kind: text("kind", { enum: ["image", "clip", "reel", "carousel", "identity_view", "agent", "text_photo", "week"] }).notNull(),
+  kind: text("kind", { enum: ["image", "clip", "reel", "carousel", "identity_view", "agent", "text_photo", "week", "tryon"] }).notNull(),
   status: text("status", { enum: ["queued", "running", "completed", "failed"] }).notNull().default("queued"),
   /** Client-generated id: a retried submission returns the existing job instead of starting another. */
   requestId: text("request_id").notNull(),

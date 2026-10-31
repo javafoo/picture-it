@@ -32,6 +32,8 @@ test("a price is always a whole number of credits that covers its cost", () => {
     { kind: "image", model: "daily" },
     { kind: "identity_view" },
     ...[3, 5, 8, 10].map((seconds): Action => ({ kind: "clip", model: "omni", seconds })),
+    { kind: "tryon", withPhoto: false },
+    { kind: "tryon", withPhoto: true },
   ];
   for (const action of actions) {
     const credits = creditsFor(action);
@@ -54,4 +56,9 @@ test("the free allowance buys a real week of posts", () => {
   assert.ok(FREE_CREDITS >= 30);
   assert.ok(whatCreditsBuy(FREE_CREDITS).photos >= 30);
   assert.match(creditsBuySentence(FREE_CREDITS), /photos/);
+});
+
+test("a look is one credit on her own photo, two when the model photo is made first", () => {
+  assert.equal(creditsFor({ kind: "tryon", withPhoto: false }), 1);
+  assert.equal(creditsFor({ kind: "tryon", withPhoto: true }), 2);
 });

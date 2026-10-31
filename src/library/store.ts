@@ -52,6 +52,8 @@ export type Destination = {
   rightsConfirmedAt: string;
   /** "scene" when she said these are places and things rather than herself. Photos only. */
   subject?: PhotoSubject;
+  /** A piece from her shop, to be tried on: what it is called and what kind of garment. Photos only. */
+  piece?: { name: string; category: string };
   /**
    * The caller's idempotency key, kept as `meta.requestId`. A second call with
    * the same key for the same user returns the first row and stores nothing.
@@ -118,7 +120,7 @@ export async function storeUploadResult(where: Destination, raw: Buffer, claimed
 /* Photos                                                             */
 /* ------------------------------------------------------------------ */
 
-async function storePhoto({ user, avatarId, folderId, originalName, rightsConfirmedAt, subject, requestId }: Destination, raw: Buffer, claimedType: string, spend: Spend): Promise<UploadResult> {
+async function storePhoto({ user, avatarId, folderId, originalName, rightsConfirmedAt, subject, piece, requestId }: Destination, raw: Buffer, claimedType: string, spend: Spend): Promise<UploadResult> {
   const photo = await reencodeToJpeg(raw, { claimedType });
 
   /* Stored as `image`, the same kind a generated photo gets, because that is
@@ -138,6 +140,7 @@ async function storePhoto({ user, avatarId, folderId, originalName, rightsConfir
       rightsConfirmedAt,
       // Only a scene is marked: every photo without the mark is her, as every photo was before.
       ...(subject === "scene" ? { subject } : {}),
+      ...(piece ? { piece } : {}),
       originalName,
       original: { type: photo.originalType, width: photo.originalWidth, height: photo.originalHeight, bytes: raw.byteLength },
       ...(requestId ? { requestId } : {}),

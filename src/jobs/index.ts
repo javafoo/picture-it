@@ -103,7 +103,7 @@ export class UnsupportedJobError extends Error {
 /* The kinds, as a runtime set. TypeScript has this as a closed union, but
    a job is started from a server action, which is a public endpoint: a kind
    that is not one of these has to be refused before anything is priced. */
-const KINDS: ReadonlySet<string> = new Set<JobKind>(["image", "clip", "reel", "carousel", "agent", "text_photo", "week"]);
+const KINDS: ReadonlySet<string> = new Set<JobKind>(["image", "clip", "reel", "carousel", "agent", "text_photo", "week", "tryon"]);
 
 /**
  * What we expect a job to cost us, before it runs.
@@ -137,6 +137,7 @@ function limitFor(kind: JobKind, generation: boolean): LimitName {
 function providerOf(input: JobInput): { provider: string; model: string } {
   if (input.kind === "clip") return { provider: clipProviderOf(clipModelOf(input)), model: CLIP_ENDPOINT[clipModelOf(input)] };
   if (input.kind === "image") return { provider: "gemini", model: "image" };
+  if (input.kind === "tryon") return { provider: "youcam", model: "cloth-v4" };
   if (input.kind === "carousel" || input.kind === "text_photo") return { provider: "self", model: "canvas" };
   if (input.kind === "agent") return { provider: "self", model: "agent" };
   if (input.kind === "week") return { provider: "self", model: "week" };

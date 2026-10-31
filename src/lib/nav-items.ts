@@ -23,8 +23,10 @@ export function navItems(done: (href: string) => boolean, setupFinished: boolean
   const step = (href: string) => (setupFinished ? {} : { done: done(href) });
   return [
     { href: "/", label: "Overview", short: "Home", primary: true, group: "daily" },
+    // The product: a piece from her shop, tried on her model, in the places she picks.
+    { href: "/studio", label: "Studio", short: "Studio", primary: true, group: "daily" },
     // The agent: talk about the week, get the week's posts.
-    { href: "/week", label: "Your week", short: "Week", primary: true, group: "daily" },
+    { href: "/week", label: "Your week", short: "Week", group: "daily" },
     // The composer: one message makes a reel, photos or a set.
     { href: "/create", label: "Create", short: "Create", primary: true, group: "daily", ...step("/create") },
     { href: "/hooks", label: "Hooks", short: "Hooks", group: "daily" },

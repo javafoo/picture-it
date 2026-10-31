@@ -20,6 +20,8 @@ export type Action =
   | { kind: "image"; model: "pro" | "daily" }
   | { kind: "clip"; model: "omni"; seconds: number }
   | { kind: "identity_view" }
+  /** One YouCam try-on, and the new photo of her it is put on when no photo was given. */
+  | { kind: "tryon"; withPhoto: boolean }
   | { kind: "reel" | "carousel" | "text" };
 
 /* Gemini Omni Flash is token-metered: $17.50 per million video tokens at
@@ -27,6 +29,10 @@ export type Action =
    and the model's thinking. $0.104 covers both from three seconds up
    (`src/ai/omni.ts` has the measured clip). It always makes sound. */
 const CLIP_USD_PER_SECOND = { omni: 0.104 } as const;
+
+/* A YouCam clothes try-on is two units. The unit price is not published in a
+   form we can read, so it is held at $0.10 a try-on (`src/ai/youcam.ts`). */
+const TRYON_USD = 0.1;
 
 /** Provider list cost in USD. */
 export function costUsd(action: Action): number {
@@ -37,6 +43,8 @@ export function costUsd(action: Action): number {
     case "image": return action.model === "pro" ? 0.134 : 0.06;
     case "identity_view": return 0.134;
     case "clip": return CLIP_USD_PER_SECOND[action.model] * action.seconds;
+    // The photo she is dressed in, when one is made first, is a Nano Banana 2.1 photo.
+    case "tryon": return TRYON_USD + (action.withPhoto ? 0.06 : 0);
     default: return 0; // rendering and writing are free
   }
 }

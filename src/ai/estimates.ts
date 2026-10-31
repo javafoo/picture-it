@@ -147,6 +147,8 @@ export const JOB_MODEL_ESTIMATE_USD: Record<string, number> = {
   // The motion prompt is written locally; nothing extra.
   clip: 0,
   identity_view: 0,
+  // The new model photo, when one is made, brings the prompt writer and the judge.
+  tryon: CALL_ESTIMATE_USD.text_short + CALL_ESTIMATE_USD.vision_photo,
   // The face finder, once per photo; the drawing is our own compute.
   text_photo: CALL_ESTIMATE_USD.vision_photo,
   /* An agent run: the writer and its fact-check, the director, the motion

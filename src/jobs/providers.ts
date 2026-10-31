@@ -1,6 +1,6 @@
 import type { ClipState } from "@/ai/clips";
 
-import type { CarouselJobInput, ClipJobInput, ImageJobInput, JobRecord, ReelJobInput, TextPhotoJobInput } from "./types";
+import type { CarouselJobInput, ClipJobInput, ImageJobInput, JobRecord, ReelJobInput, TextPhotoJobInput, TryOnJobInput } from "./types";
 
 /* Everything a job does to the outside world, behind one interface.
 
@@ -51,6 +51,9 @@ export interface JobProviders {
 
   /** Draw her words on one of her photos and store the result beside it. Runs to completion. */
   renderTextPhoto(job: JobRecord, input: TextPhotoJobInput): Promise<StepOutcome>;
+
+  /** Make the model photo if one is needed, try the piece on her with YouCam, and store the look. Runs to completion. */
+  tryOn(job: JobRecord, input: TryOnJobInput): Promise<StepOutcome>;
 
   /** Undo a stored output that lost the race to another poll, so only one survives. */
   discardMedia(userId: string, mediaIds: string[]): Promise<void>;

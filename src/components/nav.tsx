@@ -43,6 +43,15 @@ function GearIcon({ className = "size-5" }: { className?: string }) {
   );
 }
 
+function HangerIcon({ className = "size-5" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" className={className}>
+      <path d="M9.5 6.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V11" />
+      <path d="M12 11 3.6 17.1A1 1 0 0 0 4.2 19h15.6a1 1 0 0 0 .6-1.9L12 11Z" />
+    </svg>
+  );
+}
+
 const ICONS: Record<string, (props: { className?: string }) => ReactNode> = {
   "/": HomeIcon,
   "/brief": DocIcon,
@@ -50,6 +59,7 @@ const ICONS: Record<string, (props: { className?: string }) => ReactNode> = {
   "/avatar": FaceIcon,
   "/library": LibraryIcon,
   "/create": SparkIcon,
+  "/studio": HangerIcon,
   "/hooks": PenIcon,
   "/reels": ReelIcon,
   "/carousels": StackIcon,

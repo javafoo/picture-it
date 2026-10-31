@@ -37,7 +37,7 @@ import { ONBOARDING_FREEBIE, type CarouselJobInput, type JobRecord } from "./typ
 /* Fake providers                                                      */
 /* ------------------------------------------------------------------ */
 
-type StepName = "generateImage" | "submitClip" | "clipStatus" | "storeClip" | "assembleReel" | "renderCarousel" | "renderTextPhoto";
+type StepName = "generateImage" | "submitClip" | "clipStatus" | "storeClip" | "assembleReel" | "renderCarousel" | "renderTextPhoto" | "tryOn";
 
 interface Fakes {
   providers: JobProviders;
@@ -54,7 +54,7 @@ interface Fakes {
 function fakeProviders(): Fakes {
   const state: Fakes = {
     providers: null as unknown as JobProviders,
-    calls: { generateImage: 0, submitClip: 0, clipStatus: 0, storeClip: 0, assembleReel: 0, renderCarousel: 0, renderTextPhoto: 0 },
+    calls: { generateImage: 0, submitClip: 0, clipStatus: 0, storeClip: 0, assembleReel: 0, renderCarousel: 0, renderTextPhoto: 0, tryOn: 0 },
     discarded: [],
     clip: { state: "pending", status: "queued" },
     failNext: {},
@@ -103,6 +103,10 @@ function fakeProviders(): Fakes {
     async renderTextPhoto(): Promise<StepOutcome> {
       await enter("renderTextPhoto");
       return outcome(0);
+    },
+    async tryOn(): Promise<StepOutcome> {
+      await enter("tryOn");
+      return outcome(0.1);
     },
     async discardMedia(_userId, mediaIds) {
       state.discarded.push(...mediaIds);
@@ -450,6 +454,32 @@ describe("startJob", () => {
     assert.equal(second.id, first.id);
     await drain();
     assert.equal(provider.calls.renderCarousel, 1);
+  });
+});
+
+describe("try-on", () => {
+  test("a look made from a scene charges for the photo and the try-on, runs after the response, and settles", async () => {
+    seedCredits(100);
+    const input = { kind: "tryon" as const, garmentMediaId: "g1", category: "full_body" as const, scene: "street" };
+    const started = await startJob(user(), { kind: "tryon", requestId: "t1", avatarId: "a1", input }, deps());
+    const credits = creditsFor({ kind: "tryon", withPhoto: true });
+    assert.equal(started.credits, credits);
+    assert.equal(await balance(), 100 - credits);
+    assert.equal(provider.calls.tryOn, 0, "nothing runs inside the request");
+    assert.deepEqual(limited.asked, ["jobs"]);
+
+    await drain();
+    const done = await advanceJob(USER_ID, started.id, deps());
+    assert.equal(done?.status, "completed");
+    assert.equal(provider.calls.tryOn, 1);
+    assert.equal(await balance(), 100 - credits);
+  });
+
+  test("a look on a photo she already has is the try-on alone", async () => {
+    seedCredits(100);
+    const input = { kind: "tryon" as const, garmentMediaId: "g1", category: "upper_body" as const, modelMediaId: "m1" };
+    const started = await startJob(user(), { kind: "tryon", requestId: "t2", avatarId: "a1", input }, deps());
+    assert.equal(started.credits, creditsFor({ kind: "tryon", withPhoto: false }));
   });
 });
 

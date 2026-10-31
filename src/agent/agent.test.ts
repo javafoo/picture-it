@@ -52,6 +52,7 @@ function fakeProviders(): Fakes {
     async assembleReel(_job, input) { count("assembleReel"); state.inputs.push(input); return outcome(0); },
     async renderCarousel(_job, input) { count("renderCarousel"); state.inputs.push(input); return { mediaIds: ["slide_1", "slide_2", "slide_3"], message: "3 slides rendered.", costUsd: 0 }; },
     async renderTextPhoto(_job, input) { count("renderTextPhoto"); state.inputs.push(input); return { mediaIds: ["worded_1"], message: "Your words are on the photo.", costUsd: 0 }; },
+    async tryOn(_job, input) { count("tryOn"); state.inputs.push(input); return outcome(0.1); },
     async discardMedia() {},
   };
   return state;

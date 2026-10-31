@@ -5,10 +5,10 @@ import { bottomBarItems, navItems } from "./nav-items";
 
 const none = () => false;
 
-test("the phone's bottom bar is exactly Home, Week, Create, Library, Brand", () => {
+test("the phone's bottom bar is exactly Home, Studio, Create, Library, Brand", () => {
   assert.deepEqual(
     bottomBarItems(navItems(none, false)).map((item) => item.short),
-    ["Home", "Week", "Create", "Library", "Brand"],
+    ["Home", "Studio", "Create", "Library", "Brand"],
   );
 });
 
@@ -16,7 +16,7 @@ test("the rail lists the daily pages, then the ones set up once", () => {
   const items = navItems(none, false);
   assert.deepEqual(
     items.map((item) => item.label),
-    ["Overview", "Your week", "Create", "Hooks", "Library", "Brand", "Avatar"],
+    ["Overview", "Studio", "Your week", "Create", "Hooks", "Library", "Brand", "Avatar"],
   );
   assert.deepEqual([...new Set(items.map((item) => item.group))], ["daily", "setup"]);
 });

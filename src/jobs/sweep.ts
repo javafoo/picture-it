@@ -55,7 +55,7 @@ export const SWEEP_BUDGET_MS = 120_000;
 /** Kinds a poll moves along: taken after `SWEEP_IDLE_MS`. */
 export const SWEPT_WHEN_IDLE: readonly JobKind[] = ["agent", "clip", "week"];
 /** Kinds that run in one go after their response: taken only once a poll would write them off. */
-export const SWEPT_WHEN_STUCK: readonly JobKind[] = ["image", "reel", "carousel", "text_photo"];
+export const SWEPT_WHEN_STUCK: readonly JobKind[] = ["image", "reel", "carousel", "text_photo", "tryon"];
 
 /** What the query hands over: nothing but who, which, and what kind. */
 export type SweepRow = { userId: string; jobId: string; kind: JobKind };
