@@ -2,7 +2,7 @@
 
 **Your clothes, on a model, ready to post. No photoshoot.**
 
-Small clothing shops need photos of every piece being worn, on every channel, every week. A shoot costs more than most drops earn, and an image generator invents a dress that only looks like yours. Picture It takes your real product photo and puts that garment on your model with the [YouCam API](https://yce.perfectcorp.com/ai-api), then turns the looks into posts.
+Small clothing shops need photos of every piece being worn, for every post and ad. A photoshoot for each new piece is out of reach for many of them, and an image generator invents a dress that only looks like yours. Picture It takes your real product photo and puts that garment on your model with the [YouCam API](https://yce.perfectcorp.com/ai-api), then turns the looks into posts.
 
 ## What it does
 
