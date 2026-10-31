@@ -54,7 +54,7 @@ async function start(request: Request, user: User): Promise<Response> {
   await requireWithinLimit(user, UPLOAD_LIMIT);
 
   const avatar = await currentAvatar(user.id);
-  if (!avatar) return fail(409, "Finish setting up your avatar first, then you can add your own photos and clips.");
+  if (!avatar) return fail(409, "Finish setting up your model first, then you can add your own photos and clips.");
 
   /* A count, not a claim: the row is inserted under the atomic cap in
      `finish/`. This only spares her the upload when the answer is already no. */

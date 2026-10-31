@@ -98,7 +98,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
          dashboard's application name, so a rename is still one line. */
       localization={{
         signIn: { start: { title: `Sign in to ${PRODUCT_NAME}`, subtitle: "Welcome back." } },
-        signUp: { start: { title: "Create your first avatar for free", subtitle: "" } },
+        signUp: { start: { title: "Dress your first model for free", subtitle: "" } },
       }}
       appearance={{
         variables: {

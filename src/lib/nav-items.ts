@@ -32,7 +32,7 @@ export function navItems(done: (href: string) => boolean, setupFinished: boolean
     { href: "/hooks", label: "Hooks", short: "Hooks", group: "daily" },
     { href: "/library", label: "Library", short: "Library", primary: true, group: "daily", ...step("/library") },
     { href: "/brand", label: "Brand", short: "Brand", primary: true, group: "setup", ...step("/brand") },
-    { href: "/avatar", label: "Avatar", short: "Avatar", group: "setup", ...step("/avatar") },
+    { href: "/avatar", label: "Model", short: "Model", group: "setup", ...step("/avatar") },
   ];
 }
 

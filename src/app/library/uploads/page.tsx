@@ -80,7 +80,7 @@ export default async function LibraryUploadsPage({ searchParams }: PageProps<"/l
         title="Uploads"
         lead={
           avatars.length > 1
-            ? "Everything you added from your phone, for every avatar. Copy a place, a thing or a clip to another avatar so it can use it too."
+            ? "Everything you added from your phone, for every model. Copy a place, a thing or a clip to another model so it can use it too."
             : "Everything you added from your phone: photos of you, places and things, and clips."
         }
       >
@@ -100,7 +100,7 @@ export default async function LibraryUploadsPage({ searchParams }: PageProps<"/l
         </div>
         {avatars.length > 1 && (
           <div className="flex flex-wrap items-center gap-2" aria-label="Avatar">
-            <Chip href={uploadsHref({ group })} on={avatarId === null} label="Every avatar" />
+            <Chip href={uploadsHref({ group })} on={avatarId === null} label="Every model" />
             {avatars.map((avatar) => (
               <Chip key={avatar.id} href={uploadsHref({ group, avatarId: avatar.id })} on={avatarId === avatar.id} label={avatar.name} />
             ))}

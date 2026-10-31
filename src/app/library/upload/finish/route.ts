@@ -49,7 +49,7 @@ async function finish(request: Request, user: User): Promise<Response> {
   const rightsConfirmedAt = new Date().toISOString();
 
   const avatar = await currentAvatar(user.id);
-  if (!avatar) return fail(409, "Finish setting up your avatar first, then you can add your own photos and clips.");
+  if (!avatar) return fail(409, "Finish setting up your model first, then you can add your own photos and clips.");
 
   const storage = getStorage();
   try {

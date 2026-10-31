@@ -108,6 +108,8 @@ export const ACTION_ESTIMATE_USD = {
   find_face: CALL_ESTIMATE_USD.vision_photo,
   /** One screening pass over one photo. */
   screen_photo: CALL_ESTIMATE_USD.vision_photo,
+  // One photo of a model she described, at the price of a Nano Banana 2.1 photo.
+  cast_photo: 0.06,
   /** One screening pass over a scene idea. */
   screen_idea: CALL_ESTIMATE_USD.text_short,
   /** Three movement suggestions from a photo's stored scene. Text only. */

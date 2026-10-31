@@ -53,7 +53,7 @@ async function Overview() {
      remaining steps (a clip, a draft) are things the Studio makes anyway. */
   const next = agentReady ? undefined : steps.find((step) => !step.done);
   const doneCount = steps.filter((step) => step.done).length;
-  const name = profile.personaName?.trim() || avatar?.name?.trim() || "Your avatar";
+  const name = profile.personaName?.trim() || avatar?.name?.trim() || "Your model";
 
   return (
     <>
@@ -72,7 +72,7 @@ async function Overview() {
             Working on <span className="font-semibold text-ink">{avatar.name}</span>
           </span>
           <Link href="/avatars" className="inline-flex min-h-11 items-center font-medium text-accent underline-offset-4 hover:underline">
-            Switch avatar
+            Switch model
           </Link>
         </p>
       )}

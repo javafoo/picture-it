@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ActionForm } from "@/components/action-form";
 import { Ask } from "@/components/onboarding/progress";
+import { CastModel } from "@/components/onboarding/cast-model";
 import { PhotoUploader } from "@/components/onboarding/photo-uploader";
 import { SetupScreen } from "@/components/onboarding/screen";
 import { buttonClass, Card, Note } from "@/components/ui";
@@ -18,7 +19,7 @@ export const dynamic = "force-dynamic";
 
 const CONSENT = {
   twin: `I am the person in these photos. I agree to ${PRODUCT_NAME} using them to generate new photos and videos of my face.`,
-  avatar: "I own these images or have the right to use them, and if they show a real person I have that person's permission.",
+  avatar: "I own any photos I add or have the right to use them, and if they show a real person I have that person's permission. If I describe a model, she is made up and not a real person.",
 } as const;
 
 export default async function PhotosPage() {
@@ -67,6 +68,7 @@ export default async function PhotosPage() {
         </Card>
       ) : (
         <>
+          {kind === "avatar" && !replacing && !enough && <CastModel />}
           <p className="mb-4 text-sm font-medium text-ink">{photoCountMessage(uploads.length)}</p>
 
           {uploads.length > 0 && (

@@ -58,41 +58,41 @@ export default async function BrandPage() {
         actionsClassName="sticky bottom-24 z-20 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-line bg-surface/95 p-3 shadow-lift backdrop-blur md:bottom-6"
       >
         <Group step={1} title="Her" hint="Her story is the only personal history the writer may use, and a fact-check pass rewrites anything it invents. Saving this page updates the brief too.">
-          <Field label="Persona name" hint="The name on the account. Leave it blank if you use your own.">
-            <Input name="personaName" defaultValue={profile.personaName ?? ""} placeholder="Maya" />
+          <Field label="Model name" hint="Your model's name. Leave it blank if she is you.">
+            <Input name="personaName" defaultValue={profile.personaName ?? ""} placeholder="Ava" />
           </Field>
           <Field label="Before" hint="Her story, first person. Where she was before this worked. Only things you are happy to see in a caption.">
-            <Textarea name="storyBefore" defaultValue={story.before} rows={3} placeholder="My account was dead. I had ideas but filming myself was never going to happen." />
+            <Textarea name="storyBefore" defaultValue={story.before} rows={3} placeholder="I could never find linen dresses in a shape that lasted past one summer." />
           </Field>
           <Field label="What changed" hint="The decision, the thing she tried, the moment it clicked.">
-            <Textarea name="storyTurn" defaultValue={story.turn} rows={2} placeholder="I built an AI avatar so I could post every day without being on camera." />
+            <Textarea name="storyTurn" defaultValue={story.turn} rows={2} placeholder="In 2024 I started cutting my own from my spare room." />
           </Field>
           <Field label="Now" hint="Only what is true today. No rounding up.">
-            <Textarea name="storyNow" defaultValue={story.now} rows={2} placeholder="I post two or three times a day and it takes minutes." />
+            <Textarea name="storyNow" defaultValue={story.now} rows={2} placeholder="I run a small online shop with a new drop every Friday." />
           </Field>
           <Field label="What she believes" hint="One per line. Something about the niche other people in it do not say.">
             <Textarea
               name="pointOfView"
               defaultValue={(brief?.pointOfView ?? []).map((item) => item.text).join("\n")}
               rows={3}
-              placeholder="Building the avatar is the easy part. Nobody teaches what to post with it."
+              placeholder="A dress should get better with every wash."
             />
           </Field>
         </Group>
 
         <Group step={2} title="Who this is for" hint="One person in one situation, not a category. Vague answers make vague hooks.">
           <Field label="Niche" hint="What the account is about, in one line.">
-            <Input name="niche" defaultValue={profile.niche} placeholder="A hair studio for women who want an honest stylist" />
+            <Input name="niche" defaultValue={profile.niche} placeholder="Easy linen dresses for women who want to feel good all week" />
           </Field>
           <Field label="Audience" hint="Who she is, what she wants, what stops her.">
-            <Textarea name="audience" defaultValue={profile.audience} rows={3} placeholder="Women in a 9-5 who have started an account twice and deleted it both times." />
+            <Textarea name="audience" defaultValue={profile.audience} rows={3} placeholder="Women who want one dress they can wear to work and to dinner, and who are tired of ironing." />
           </Field>
           <Field label="What they are stuck on" hint="One per line, the way they would say it.">
             <Textarea
               name="problem"
               defaultValue={(brief?.problem ?? []).map((item) => item.text).join("\n")}
               rows={3}
-              placeholder="I post every day and get 200 views. I have bought two courses and still do not know what to say."
+              placeholder="Everything linen I buy looks like a sack on me. I never know how it will fit until it arrives."
             />
           </Field>
         </Group>

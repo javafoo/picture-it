@@ -312,13 +312,13 @@ export function Gallery({
                   <label className="flex items-center gap-2 text-sm text-ink-soft">
                     <span className="sr-only sm:not-sr-only">Copy to</span>
                     <Select
-                      aria-label="Copy to avatar"
+                      aria-label="Copy to model"
                       value=""
                       disabled={pending || copyablePicked.length === 0}
                       onChange={(event) => event.target.value && copyTo(copyablePicked.map((item) => item.id), event.target.value)}
                       className="min-w-40"
                     >
-                      <option value="">{pending ? "Copying…" : "Choose an avatar…"}</option>
+                      <option value="">{pending ? "Copying…" : "Choose a model…"}</option>
                       {avatars.map((avatar) => (
                         <option key={avatar.id} value={avatar.id}>
                           {avatar.name}

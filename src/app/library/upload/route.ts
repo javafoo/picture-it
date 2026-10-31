@@ -62,7 +62,7 @@ async function upload(request: Request, user: User): Promise<Response> {
      the same things a generated one is: carousel picking and animation. An
      account with no avatar has not finished setup and has nowhere to put this. */
   const avatar = await currentAvatar(user.id);
-  if (!avatar) return fail(409, "Finish setting up your avatar first, then you can add your own photos and clips.");
+  if (!avatar) return fail(409, "Finish setting up your model first, then you can add your own photos and clips.");
 
   const claimed = normaliseVideoType(file.type);
   const wantsVideo = claimed.startsWith("video/");

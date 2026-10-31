@@ -16,7 +16,7 @@ test("the rail lists the daily pages, then the ones set up once", () => {
   const items = navItems(none, false);
   assert.deepEqual(
     items.map((item) => item.label),
-    ["Overview", "Studio", "Your week", "Create", "Hooks", "Library", "Brand", "Avatar"],
+    ["Overview", "Studio", "Your week", "Create", "Hooks", "Library", "Brand", "Model"],
   );
   assert.deepEqual([...new Set(items.map((item) => item.group))], ["daily", "setup"]);
 });

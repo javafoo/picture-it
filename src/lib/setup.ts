@@ -30,14 +30,14 @@ export function setupSteps(c: SetupCounts): SetupStep[] {
     {
       href: "/brand",
       title: "Brand",
-      body: "Who you talk to, what you sell, the word people comment.",
-      todo: "Tell the writer who she is talking to",
+      body: "Who buys from you, what you sell, the word people comment.",
+      todo: "Tell the writer about your shop",
       done: c.profileComplete,
       status: c.profileComplete ? `Keyword ${c.keyword ?? ""}`.trim() : "Not set up",
     },
     {
       href: "/avatar",
-      title: "Avatar",
+      title: "Model",
       body: "The reference photos that keep her face the same everywhere.",
       todo: "Add real photos so her face stays hers",
       done: c.references > 0,

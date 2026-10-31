@@ -152,7 +152,7 @@ export function Landing() {
                 </div>
               ))}
             </div>
-            <p className="mt-10 max-w-xl text-ink-soft">Your model can be you, from a few of your own photos, or a character from photos you have the right to use. She looks the same in every shot.</p>
+            <p className="mt-10 max-w-xl text-ink-soft">Your model can be you, from a few of your own photos, or someone made up: describe her and her photos are made for you. She looks the same in every shot.</p>
           </div>
         </section>
 

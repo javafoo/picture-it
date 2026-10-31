@@ -24,10 +24,10 @@ export default async function WeekPage() {
       <>
         <PageHeader eyebrow="Your week" title="Talk for two minutes. Get your week." />
         <EmptyState
-          title="Set up your avatar and brand first"
+          title="Set up your model and brand first"
           action={
             <Link href={avatar ? "/brand" : "/onboarding"} className={buttonClass("primary")}>
-              {avatar ? "Fill in your brand" : "Set up your avatar"}
+              {avatar ? "Fill in your brand" : "Set up your model"}
             </Link>
           }
         >

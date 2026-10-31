@@ -156,7 +156,7 @@ export default async function AvatarsPage() {
       <Card className="mt-8 p-4 sm:p-6">
         <h2 className="font-display text-lg text-ink">Add an avatar</h2>
         <p className="mt-1 text-sm text-muted">
-          {allowance === 1 ? "Your plan includes one avatar." : `Your plan includes ${allowance} avatars. You have ${avatars.length}.`}
+          {allowance === 1 ? "Your plan includes one model." : `Your plan includes ${allowance} models. You have ${avatars.length}.`}
         </p>
         {canAdd ? (
           <ActionForm
@@ -178,14 +178,14 @@ export default async function AvatarsPage() {
                 <ChoiceCard name="avatarKind" value="twin" title="My own face">
                   You will upload photos of yourself, and she will look like you.
                 </ChoiceCard>
-                <ChoiceCard name="avatarKind" value="avatar" title="A character I already have images of" defaultChecked>
+                <ChoiceCard name="avatarKind" value="avatar" title="A model I already have photos of" defaultChecked>
                   You have pictures of her already and you own them or have the right to use them.
                 </ChoiceCard>
               </div>
             </fieldset>
           </ActionForm>
         ) : (
-          <p className="mt-4 text-sm text-muted">{`Every account can have up to ${allowance} avatars. Delete one to add another.`}</p>
+          <p className="mt-4 text-sm text-muted">{`Every account can have up to ${allowance} models. Delete one to add another.`}</p>
         )}
       </Card>
     </>

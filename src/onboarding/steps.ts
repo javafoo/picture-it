@@ -51,7 +51,7 @@ export const STEPS: readonly Step[] = [
     good:
       "A person you could picture on a Tuesday night: what their week looks like, what they have already tried, what they are afraid of.",
     example:
-      "Women in their thirties who have booked the same haircut for years because they are scared to try something new, and want a stylist who will tell them honestly what suits them.",
+      "Women in their thirties who want one dress they can wear to work and to dinner, and who are tired of clothes that look nothing like the photo when they arrive.",
     passTest:
       "You can describe this person's Tuesday night scroll: what they just watched, what they are feeling, why your post would stop their thumb.",
     aiSuggests: true,
@@ -63,7 +63,7 @@ export const STEPS: readonly Step[] = [
     help: "The sentence they would text a friend at 11pm, not the industry word for it.",
     good: "One specific stuck point, in their words, including the thing they already tried that did not work.",
     example:
-      "\"I have saved fifty hair photos and I still leave every appointment looking exactly the same.\"",
+      "\"Everything linen I buy looks like a sack on me, and I never know how it fits until it arrives.\"",
     passTest: "It is a sentence a real person would say out loud, and it names something they already tried.",
     aiSuggests: true,
   },
@@ -73,7 +73,7 @@ export const STEPS: readonly Step[] = [
     question: "What do you sell or give away, and what word do they comment to get it?",
     help: "One thing, with its price or the word free. One keyword: a single word, easy to spell.",
     good: "A named thing, what it gets them, what it costs, and a keyword someone could type without thinking.",
-    example: "A free 15-minute consult to plan your next cut and colour. Keyword: CONSULT",
+    example: "Early access to the Friday drop, free. Keyword: LINEN",
     passTest: "A stranger could repeat what they get, what it costs, and what to comment.",
     aiSuggests: true,
     fields: [
@@ -81,13 +81,13 @@ export const STEPS: readonly Step[] = [
         id: "text",
         question: "What is it, and what does it cost?",
         help: "Name it, say what they get, say the price or say it is free.",
-        example: "A free 15-minute consult to plan your next cut and colour.",
+        example: "Early access to the Friday drop, free.",
       },
       {
         id: "keyword",
         question: "What single word do they comment?",
         help: "One word, no spaces. Short enough to type on a phone without a typo.",
-        example: "CONSULT",
+        example: "LINEN",
       },
     ],
   },
@@ -98,7 +98,7 @@ export const STEPS: readonly Step[] = [
     help: "Only what actually happened. This is the only personal history the app will ever write about you.",
     good: "Three short beats with the thinking in them: the reaction, the assumption, the moment it clicked.",
     example:
-      "Before: I was cutting hair in a busy chain salon, rushing every client through in forty minutes. Turn: in 2022 I opened my own two-chair studio so I could take my time. Now: I am booked six weeks out, mostly by people who found me online.",
+      "Before: I could never find linen dresses in a shape that lasted past one summer. Turn: in 2024 I started cutting my own from my spare room. Now: I run a small online shop with a new drop every Friday.",
     passTest: "Each beat is something that happened to you, not a feeling or a slogan.",
     aiSuggests: true,
     fields: [
@@ -106,19 +106,19 @@ export const STEPS: readonly Step[] = [
         id: "before",
         question: "Where were you before this worked?",
         help: "The low point. What was actually happening.",
-        example: "I was cutting hair in a busy chain salon, rushing every client through in forty minutes.",
+        example: "I was buying linen dresses I loved and could never find them in a shape that lasted past one summer.",
       },
       {
         id: "turn",
         question: "What changed?",
         help: "The decision, the thing you tried, the moment it clicked.",
-        example: "In 2022 I opened my own two-chair studio so I could take my time with every client.",
+        example: "In 2024 I started cutting my own from my spare room and sold the first ten to friends.",
       },
       {
         id: "now",
         question: "Where are you now?",
         help: "Only what is true today. No rounding up.",
-        example: "I am booked six weeks out, mostly by people who found me online.",
+        example: "I run a small online shop with a new drop every Friday.",
       },
     ],
   },
@@ -128,7 +128,7 @@ export const STEPS: readonly Step[] = [
     question: "What numbers and facts can you stand behind?",
     help: "One fact per line, each something you could screenshot today. Followers, views, posts, streaks. Not money: revenue and income figures are never used in captions. You type these: we never write a number for you.",
     good: "Three to five short lines, one checkable fact each, no sentences and no money.",
-    example: "Booked six weeks out. 212 five-star reviews. 1,400 local followers.",
+    example: "A new drop every Friday. 212 five-star reviews. 1,400 followers.",
     passTest: "Every line is checkable, and none of it is rounded up or borrowed from someone else.",
     aiSuggests: false,
   },
@@ -136,12 +136,12 @@ export const STEPS: readonly Step[] = [
     id: "pov",
     title: "What you believe",
     question: "What do you believe about your niche that other people in it do not say?",
-    help: "Something you learned by doing it, that would mildly annoy one other creator.",
+    help: "Something you learned by doing it, that would mildly annoy one other shop owner.",
     good: "A belief you could argue for ten minutes, with the reason you hold it.",
     example:
-      "Most bad haircuts are a communication problem, not a skill problem. Ten honest minutes before the scissors come out saves months of growing it out.",
+      "Most returns are a photo problem, not a clothing problem. Show a dress on a real body in real light and people keep what they order.",
     passTest:
-      "Some of your audience would nod hard and at least one other creator in your niche would disagree with it.",
+      "Some of your audience would nod hard and at least one other shop owner would disagree with it.",
     aiSuggests: true,
   },
   {
@@ -150,7 +150,7 @@ export const STEPS: readonly Step[] = [
     question: "How do you sound?",
     help: "A few words for your voice, then one caption written the way you would post it.",
     good: "Words a friend would use about how you talk, and a caption you would send without editing it first.",
-    example: "Warm, honest, a little cheeky.",
+    example: "Warm, simple, a little playful.",
     passTest: "You would post the caption as it is.",
     aiSuggests: false,
     fields: [
@@ -158,13 +158,13 @@ export const STEPS: readonly Step[] = [
         id: "label",
         question: "Your voice in a few words",
         help: "How a friend would describe the way you talk.",
-        example: "Warm, honest, a little cheeky.",
+        example: "Warm, simple, a little playful.",
       },
       {
         id: "caption",
         question: "One caption, the way you would post it",
         help: "Any post. This is how the writer learns your rhythm.",
-        example: "Bring me the photo, but also tell me how long you spend on your hair in the morning. That one answer changes everything.",
+        example: "This one has been to the beach, a wedding and my mother-in-law's. It came home fine from two of them.",
       },
     ],
   },

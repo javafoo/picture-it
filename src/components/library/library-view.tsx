@@ -295,7 +295,7 @@ export async function LibraryView({
       {/* This shelf is one avatar's photos; the Uploads tab is every upload, clips too, on every avatar. */}
       {shelf === "uploads" && (
         <p className="mb-4 text-sm text-muted">
-          These are the photos you added for {avatar?.name ?? "this avatar"}.{" "}
+          These are the photos you added for {avatar?.name ?? "this model"}.{" "}
           <Link href="/library/uploads" className="font-medium text-ink underline-offset-4 hover:underline">
             See every upload on the Uploads tab
           </Link>

@@ -41,8 +41,4 @@ Checks: `pnpm exec tsc --noEmit`, `pnpm exec eslint src scripts --max-warnings 0
 
 The repository ships a plain photo style. A deployment can supply its own in the `HOUSE_STYLE` environment variable.
 
-## Background
-
-Picture It is built on my own earlier content app. The try-on job, the Studio, the lookbook posts, the new design and the homepage were built for the YouCam API hackathon.
-
 License: AGPL-3.0.

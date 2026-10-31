@@ -47,12 +47,12 @@ export default async function AvatarPage() {
   const switching = await canSwitchAvatars(user);
   const references = avatar ? await listReferences(user.id, avatar.id) : [];
   const lock = identityLock(avatar);
-  const name = avatar?.name?.trim() || "Your avatar";
+  const name = avatar?.name?.trim() || "Your model";
 
   if (references.length === 0) {
     return (
       <>
-        <PageHeader eyebrow="Avatar" title="Her face, locked in">
+        <PageHeader eyebrow="Model" title="Her face, locked in">
           {switching && (
             <Link href="/avatars" className={buttonClass("quiet")}>
               All avatars
@@ -87,7 +87,7 @@ export default async function AvatarPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Avatar" title="This is her">
+      <PageHeader eyebrow="Model" title="This is her">
         {switching && (
           <Link href="/avatars" className={buttonClass("quiet")}>
             All avatars

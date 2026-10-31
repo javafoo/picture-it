@@ -17,7 +17,7 @@ export default async function WelcomePage() {
   return (
     <SetupScreen stage="welcome">
       <Ask help="About ten minutes, on your phone, and you can stop at any point and come back. Nothing here costs anything.">
-        Let&rsquo;s set up your avatar
+        Let&rsquo;s set up your model
       </Ask>
 
       <ActionForm
@@ -29,15 +29,15 @@ export default async function WelcomePage() {
         hint="You can change any of this later."
         actionsClassName="flex flex-col gap-2 pt-1 [&>button]:w-full"
       >
-        <Field label="What is she called?" hint="The name on the account. Use your own if that is the plan.">
-          <Input name="personaName" defaultValue={setup?.personaName ?? ""} placeholder="Maya" autoComplete="off" required />
+        <Field label="What is she called?" hint="Your model's name. Use your own if she is you.">
+          <Input name="personaName" defaultValue={setup?.personaName ?? ""} placeholder="Ava" autoComplete="off" required />
         </Field>
 
-        <Field label="What is the account about?" hint="One line. Who it is for and what it is about.">
+        <Field label="What does your shop sell?" hint="One line. What you sell and who buys it.">
           <Input
             name="niche"
             defaultValue={setup?.niche ?? ""}
-            placeholder="A hair studio for women who want an honest stylist"
+            placeholder="Easy linen dresses for women who want to feel good all week"
             autoComplete="off"
             required
           />
@@ -46,7 +46,7 @@ export default async function WelcomePage() {
         <LanguageSelect defaultValue={setup?.language} />
 
         <fieldset className="space-y-3">
-          <legend className="text-sm font-medium text-ink">Whose face is she?</legend>
+          <legend className="text-sm font-medium text-ink">Who wears your clothes?</legend>
           <p className="text-xs text-muted">This decides what we can promise about the photos.</p>
           <div className="mt-2 space-y-3">
             <ChoiceCard
@@ -55,29 +55,20 @@ export default async function WelcomePage() {
               title="My own face"
               defaultChecked={setup?.avatarKind === "twin"}
             >
-              You will upload photos of yourself, and she will look like you.
+              You will upload photos of yourself, and the looks will be of you.
             </ChoiceCard>
             <ChoiceCard
               name="avatarKind"
               value="avatar"
-              title="A character I already have images of"
+              title="A made-up model"
               defaultChecked={setup?.avatarKind === "avatar" || !setup}
             >
-              You have pictures of her already and you own them or have the right to use them.
-            </ChoiceCard>
-            <ChoiceCard
-              name="avatarKind"
-              value="new"
-              title="Design a new face from a description"
-              note="Coming soon"
-              disabled
-            >
-              Not in this version. For now, start from photos you already have.
+              Describe her and we make her photos, or upload photos you have the right to use.
             </ChoiceCard>
           </div>
         </fieldset>
 
-        <Note>Next: five to fifteen photos of her. They stay private to your account.</Note>
+        <Note>Next: five to fifteen photos of her, made or uploaded. They stay private to your account.</Note>
       </ActionForm>
     </SetupScreen>
   );

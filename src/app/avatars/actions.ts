@@ -112,7 +112,7 @@ export async function newAvatarAction(_: ActionState, form: FormData): Promise<A
     if (!canAddAvatar(existing.length, allowance)) {
       throw new InvalidRequestError(
         allowance === 1
-          ? "Your plan includes one avatar. The Pro plan includes three."
+          ? "Your plan includes one model. The Pro plan includes three."
           : `Your plan includes ${allowance} avatars, and you have ${existing.length}.`,
       );
     }
