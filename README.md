@@ -1,6 +1,6 @@
-# Shotless (working name)
+# Picture It
 
-Product content for small fashion, jewelry and beauty sellers, without a photoshoot.
+Product content for small clothing sellers, without a photoshoot.
 Upload a product photo; it is tried on an AI model of your choosing with the YouCam API, and the app writes and makes the posts around it.
 
 Work in progress. Full setup instructions to follow.
