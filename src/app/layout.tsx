@@ -1,7 +1,7 @@
 import { ClerkProvider, UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
-import { Fraunces, Instrument_Sans } from "next/font/google";
+import { Bodoni_Moda, Instrument_Sans } from "next/font/google";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import "./globals.css";
@@ -19,15 +19,15 @@ import { requireUser, type User } from "@/data/users";
 import { PRODUCT_NAME } from "@/lib/product";
 import { canSwitchAvatars, currentAvatar } from "@/lib/current-avatar";
 
-/* One display face and one text face. Fraunces carries the headings and the
-   creator's own words; Instrument Sans carries everything she has to read
-   quickly. Both are variable, so weight costs no extra request. */
-const display = Fraunces({ variable: "--font-fraunces", subsets: ["latin"], display: "swap" });
+/* One display face and one text face. Bodoni Moda carries the headings, set
+   like a fashion magazine's; Instrument Sans carries everything she has to
+   read quickly. Both are variable, so weight costs no extra request. */
+const display = Bodoni_Moda({ variable: "--font-bodoni", subsets: ["latin"], display: "swap", style: ["normal", "italic"] });
 const sans = Instrument_Sans({ variable: "--font-instrument-sans", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: `${PRODUCT_NAME}`,
-  description: "Build an AI avatar and run the content engine behind it.",
+  description: "Your clothes, on a model, ready to post. No photoshoot.",
   /* The app is private; the marketing site is the page search engines should
      find. Without this the sign-in screen gets indexed under the app domain. */
   robots: { index: false, follow: false },

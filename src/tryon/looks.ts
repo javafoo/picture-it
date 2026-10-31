@@ -31,7 +31,7 @@ export const MAX_LOOKS_PER_SHOOT = 3;
 /** The idea for the photo the piece is put on. */
 export function modelPhotoIdea(scene: SceneKey): string {
   return [
-    `She stands facing the camera, full length from head to toe, arms relaxed at her sides, ${SCENES[scene].where}.`,
+    `She stands relaxed with her weight on one leg, facing the camera with a soft natural smile, full length from head to toe, arms loose at her sides, ${SCENES[scene].where}.`,
     "She wears a plain fitted white T-shirt, slim light-blue jeans and white sneakers.",
     "Her whole body is in the frame and she fills most of it. Nobody else is in the photo.",
   ].join(" ");

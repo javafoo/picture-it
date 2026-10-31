@@ -6,7 +6,8 @@ import { modelPhotoIdea, sceneKey, SCENE_KEYS } from "./looks";
 describe("looks", () => {
   it("asks for the pose the try-on needs, in the scene", () => {
     const idea = modelPhotoIdea("cafe");
-    assert.match(idea, /facing the camera, full length/);
+    assert.match(idea, /facing the camera/);
+    assert.match(idea, /full length/);
     assert.match(idea, /café/);
     assert.match(idea, /Nobody else/);
   });

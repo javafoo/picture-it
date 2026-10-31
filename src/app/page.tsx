@@ -47,9 +47,11 @@ async function Overview() {
 
   // The newest photo the judge kept, for the card below. Rejected takes are hidden.
   const portrait = images.find((image) => (image.meta as { keep?: boolean }).keep !== false);
-  const next = steps.find((step) => !step.done);
   // The agent needs the brand and her description; from then on it is the quickest way to a reel.
   const agentReady = profileComplete(profile) && references > 0;
+  /* Once her model and brand exist, the Studio is the next thing to do: the
+     remaining steps (a clip, a draft) are things the Studio makes anyway. */
+  const next = agentReady ? undefined : steps.find((step) => !step.done);
   const doneCount = steps.filter((step) => step.done).length;
   const name = profile.personaName?.trim() || avatar?.name?.trim() || "Your avatar";
 
@@ -82,10 +84,10 @@ async function Overview() {
           <div className="min-w-0 flex-1">
             <p className="eyebrow text-accent">{next ? `Step ${steps.indexOf(next) + 1} · ${next.title}` : "Today"}</p>
             <h2 className="mt-2 max-w-md font-display text-2xl text-balance sm:text-3xl">
-              {next ? next.todo : "Plan this week's posts"}
+              {next ? next.todo : `Dress ${name} in your next piece`}
             </h2>
             <p className="mt-3 max-w-md text-sm text-muted">
-              {next ? next.body : "Say what you want posted this week. The agent does the rest."}
+              {next ? next.body : "Add a product photo. She wears it in the places you pick, in photos and videos ready for your feed and your ads."}
             </p>
           </div>
           {portrait && (
@@ -98,8 +100,8 @@ async function Overview() {
             />
           )}
         </div>
-        <Link href={next ? next.href : "/create"} className={buttonClass("primary", "lg", "mt-6 w-full sm:w-auto")}>
-          {next ? `Open ${next.title}` : "Open Create"}
+        <Link href={next ? next.href : "/studio"} className={buttonClass("primary", "lg", "mt-6 w-full sm:w-auto")}>
+          {next ? `Open ${next.title}` : "Open the Studio"}
           <ArrowIcon className="size-4" />
         </Link>
       </Card>
@@ -131,7 +133,7 @@ async function Overview() {
             You are set up.
           </h2>
           <p className="mt-3 max-w-md text-sm text-ink-soft">
-            From here it is Create: say what you want posted. The step numbers have left the menu.
+            From here it is the Studio: add a piece and pick where she wears it. The step numbers have left the menu.
           </p>
           <form action={dismissSetupNoteAction} className="mt-5">
             <button type="submit" className={buttonClass("quiet")}>
