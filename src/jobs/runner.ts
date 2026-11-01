@@ -147,7 +147,8 @@ async function clipStep(job: JobRecord, input: ClipJobInput, { store, providers,
 function clipFailure(status: string): string {
   if (status === "nsfw") return "The video service refused this one as unsafe. Try a different photo or wording.";
   if (status === "canceled") return "The video service cancelled this one.";
-  return "The video service could not finish this clip.";
+  // Google's "failed" carries no reason. Some looks fail every time, others only now and then.
+  return "The video service turned this one down and did not say why. You were not charged. Press Animate again, or try another look.";
 }
 
 /**

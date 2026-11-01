@@ -39,6 +39,50 @@ function Photo({ src, alt, className = "" }: { src: string; alt: string; classNa
   return <img src={src} alt={alt} loading="lazy" className={`object-cover ${className}`} />;
 }
 
+const REEL_ICON = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 24 24", className: "size-6" } as const;
+
+/* The moving look as a seller will see it posted. The overlay is a mock-up, so
+   it carries no brand mark and no like counts: those would be numbers nobody earned. */
+function PhoneReel() {
+  return (
+    <div className="mx-auto w-full max-w-[280px] rounded-[2.5rem] bg-ink p-2 shadow-xl">
+      <div className="relative aspect-[9/16] overflow-hidden rounded-[2rem] bg-ink text-white">
+        <video src="/home/look.mp4" poster="/home/look.jpg" autoPlay muted loop playsInline aria-label="A short video of the model turning to show how the dress moves, shown as a post on a phone." className="size-full object-cover" />
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 to-transparent" />
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/35 to-transparent" />
+          <svg {...REEL_ICON} className="absolute top-4 right-3 size-6">
+            <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+            <circle cx="12" cy="13" r="3.5" />
+          </svg>
+          <div className="absolute right-3 bottom-16 flex flex-col items-center gap-4">
+            <svg {...REEL_ICON} fill="#ed2f4b" stroke="#ed2f4b" className="size-7">
+              <path d="M12 20.5s-8-4.7-8-10.7A4.6 4.6 0 0 1 12 7a4.6 4.6 0 0 1 8 2.8c0 6-8 10.7-8 10.7z" />
+            </svg>
+            <svg {...REEL_ICON}>
+              <path d="M20.5 11.5a8.5 8.5 0 1 0-3.4 6.8l3.4 1.2-1-3.5a8.4 8.4 0 0 0 1-4.5z" />
+            </svg>
+            <svg {...REEL_ICON}>
+              <path d="M21 3 3 10l7 3 3 7zM10 13l4.5-4.5" />
+            </svg>
+            <svg {...REEL_ICON}>
+              <path d="M5 12h.01M12 12h.01M19 12h.01" />
+            </svg>
+          </div>
+          <div className="absolute inset-x-3 bottom-4 text-[11px] leading-snug">
+            <div className="flex items-center gap-2">
+              <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-canvas font-display text-sm text-ink">L</span>
+              <span className="truncate font-semibold">linenandlane</span>
+              <span className="rounded-md border border-white/80 px-2 py-0.5 font-semibold">Follow</span>
+            </div>
+            <p className="mt-2 truncate">The rust wrap dress, in motion.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Landing() {
   return (
     <div className="min-h-dvh bg-canvas text-ink">
@@ -133,7 +177,7 @@ export function Landing() {
                   <Photo key={slide} src={`/home/slide-${slide}.jpg`} alt={`Slide ${slide + 1} of a lookbook post for the rust wrap dress.`} className="aspect-[4/5] w-full" />
                 ))}
               </div>
-              <video src="/home/look.mp4" poster="/home/look.jpg" autoPlay muted loop playsInline aria-label="A short video of the model turning to show how the dress moves." className="mx-auto aspect-[9/16] w-full max-w-[260px] bg-ink object-cover" />
+              <PhoneReel />
             </div>
           </div>
         </section>
