@@ -94,6 +94,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
 
   return (
     <ClerkProvider
+      /* Without these, the links between the two auth screens leave for Clerk's hosted pages. */
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
       /* The headings name the product from our own constant, not from the Clerk
          dashboard's application name, so a rename is still one line. */
       localization={{

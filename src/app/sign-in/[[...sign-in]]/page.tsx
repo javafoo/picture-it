@@ -8,8 +8,8 @@ export const metadata = { title: `Sign in · ${PRODUCT_NAME}` };
 export default function SignInPage() {
   return (
     <AuthFrame
-      headline="Get more clients from social media, without spending hours creating content."
-      lead="Your content, done for you, in your voice and with your face. No filming. No editing. No prompts."
+      headline="Get more customers from social media, without spending hours creating content."
+      lead="Your real product photos, on your model, in the places you choose. No photoshoot."
     >
       <SignIn />
     </AuthFrame>

@@ -9,7 +9,7 @@ export default function SignUpPage() {
   return (
     <AuthFrame
       headline={PRODUCT_TAGLINE}
-      lead="A few photos of you and a few questions about your business. About ten minutes, once. Then talk for two minutes a week and get finished posts."
+      lead="Set up your model once, from photos or from a description. Add a product photo and get looks in about a minute each."
     >
       <SignUp />
     </AuthFrame>
