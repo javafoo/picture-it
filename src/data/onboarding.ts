@@ -191,7 +191,6 @@ export async function flowStateFor(userId: string): Promise<{
     uploads: number;
     references: number;
     nextStep: ReturnType<typeof nextStep>;
-    reviewed: boolean;
   };
 }> {
   const session = await getSession(userId);
@@ -200,10 +199,9 @@ export async function flowStateFor(userId: string): Promise<{
      see: the old photos are retired and the new set is what the two photo
      screens are about. The avatar keeps using its old references until the new
      set is saved. */
-  const [uploads, references, profile] = await Promise.all([
+  const [uploads, references] = await Promise.all([
     listUploads(userId, avatarId),
     session?.ui.replacing ? Promise.resolve(0) : countReferences(userId, avatarId),
-    getProfile(userId, avatarId),
   ]);
   return {
     session,
@@ -214,12 +212,6 @@ export async function flowStateFor(userId: string): Promise<{
       uploads: uploads.length,
       references,
       nextStep: session ? nextStep(session.interview) : null,
-      /* Derived, like every other position in the flow, rather than read off a
-         cursor: the review screen's only lasting effect is the saved brand
-         profile, so that is what says it has been submitted. A setup that died
-         after saving it reopens past the review screen, which is correct — the
-         answers are all in. */
-      reviewed: profileComplete(profile),
     },
   };
 }

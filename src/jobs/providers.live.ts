@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { clipPriceUsd, CLIP_ENDPOINT } from "@/ai/clips";
 import { downloadOmniClip, forgetOmniClip, omniClipStatus, submitOmniClip } from "@/ai/omni";
 import { downloadTryOn, plainTryOnError, startTryOn, tryOnStatus, TRYON_USD, uploadToYouCam } from "@/ai/youcam";
-import { modelPhotoIdea, sceneKey } from "@/tryon/looks";
+import { modelPhotoIdea, sceneKey, typedPlace } from "@/tryon/looks";
 import { requireClipAspectRatio, requireMadeClipModel, requireRatioForModel } from "@/content/clip-options";
 import { describeProblems } from "@/carousel/check";
 import { fitPhotos } from "@/carousel/fit";
@@ -480,10 +480,11 @@ export const liveProviders: JobProviders = {
       if (!row || row.kind !== "image" || (row.avatarId && row.avatarId !== avatar.id)) throw new Error("That model photo is not in your library any more.");
     } else {
       const scene = sceneKey(input.scene);
-      if (!scene) throw new Error("Pick where the look is shot.");
+      const place = typedPlace(input.place);
+      if (!scene && !place) throw new Error("Pick where the look is shot.");
       const references = await referencesFor(job.userId, avatar.id);
       await requireScreenedPhotos(job.userId, references);
-      const idea = modelPhotoIdea(scene);
+      const idea = modelPhotoIdea(scene ? { scene } : { place: place! });
       const { kept, costUsd } = await generateSceneTakes({
         references: references.map((reference) => reference.image),
         lock,
@@ -495,7 +496,7 @@ export const liveProviders: JobProviders = {
       });
       const before = await saveMedia(job.userId, {
         kind: "image", avatarId: avatar.id, folderId, ...shapeOf(kept.image.data), data: kept.image.data, contentType: kept.image.mimeType,
-        meta: { idea, shot: "friend", prompt: kept.prompt, verdict: kept.verdict, keep: false, role: "tryon_model", scene, jobId: job.id },
+        meta: { idea, shot: "friend", prompt: kept.prompt, verdict: kept.verdict, keep: false, role: "tryon_model", ...(scene ? { scene } : { place }), jobId: job.id },
       });
       modelId = before.id;
       photoUsd = costUsd;
@@ -529,6 +530,7 @@ export const liveProviders: JobProviders = {
         source: "tryon", keep: true, jobId: job.id, taskId,
         garmentMediaId: garment.id, modelMediaId: modelId, category: input.category,
         ...(input.scene ? { scene: input.scene } : {}),
+        ...(input.place ? { place: input.place } : {}),
       },
     });
     return {

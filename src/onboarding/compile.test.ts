@@ -137,3 +137,19 @@ test("an edited option counts as her own words", () => {
   const state = recordAnswer(done(), "pov", { text: "Nobody teaches what to post with the tool. 2 years of it." }, "edited", T);
   assert.doesNotThrow(() => compile(state, T));
 });
+
+test("a shop that answered only the three questions still gets a usable brand", () => {
+  const setup = { avatarKind: "avatar" as const, personaName: "Ava", niche: "Linen dresses" };
+  let state = start(setup, "2026-11-01T00:00:00.000Z");
+  state = recordAnswer(state, "audience", { text: "Women who want one dress for work and dinner." }, "typed");
+  state = recordAnswer(state, "offer", { text: "The Friday drop, free to join.", keyword: "linen" }, "typed");
+  state = recordAnswer(state, "voice", { label: "warm", caption: "This one went to work and to dinner.", is: [], isNot: [] }, "typed");
+  assert.equal(state.status, "complete");
+  const { profile, brief } = compile(state);
+  assert.equal(profile.keyword, "LINEN");
+  assert.equal(profile.story, "");
+  assert.deepEqual(profile.proofPoints, []);
+  assert.deepEqual(brief.problem, []);
+  assert.deepEqual(brief.pointOfView, []);
+  assert.ok(!brief.oneLiner.text.includes("Stuck on"));
+});

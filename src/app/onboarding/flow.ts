@@ -1,4 +1,4 @@
-import { STEP_IDS, type StepId } from "@/onboarding/steps";
+import { ASKED_STEPS, type AskedStep } from "@/onboarding/steps";
 
 /* Where the setup flow is up to, and where the browser is allowed to be.
 
@@ -11,14 +11,14 @@ import { STEP_IDS, type StepId } from "@/onboarding/steps";
    Everything here is pure. `gateDecision` decides the redirect that keeps a
    half-set-up account inside setup; `resumeStage` decides where inside it. */
 
-export const STAGES = ["welcome", "photos", "roles", ...STEP_IDS, "review", "first-photo"] as const;
+export const STAGES = ["welcome", "photos", "roles", ...ASKED_STEPS, "review"] as const;
 export type Stage = (typeof STAGES)[number];
 
 /** Photos wanted before the curation pass. Fewer than five and her face drifts. */
 export const MIN_PHOTOS = 5;
 export const MAX_PHOTOS = 15;
 
-const INTERVIEW: readonly Stage[] = STEP_IDS;
+const INTERVIEW: readonly Stage[] = ASKED_STEPS;
 
 export function stageIndex(stage: Stage): number {
   return STAGES.indexOf(stage);
@@ -28,7 +28,7 @@ export function isStage(value: string): value is Stage {
   return (STAGES as readonly string[]).includes(value);
 }
 
-export function isInterviewStage(stage: Stage): stage is StepId {
+export function isInterviewStage(stage: Stage): stage is AskedStep {
   return INTERVIEW.includes(stage);
 }
 
@@ -37,7 +37,6 @@ export function stagePath(stage: Stage): string {
   if (stage === "photos") return "/onboarding/photos";
   if (stage === "roles") return "/onboarding/photos/roles";
   if (stage === "review") return "/onboarding/review";
-  if (stage === "first-photo") return "/onboarding/first-photo";
   return `/onboarding/interview/${stage}`;
 }
 
@@ -55,27 +54,19 @@ export type FlowState = {
   uploads: number;
   /** avatar_references rows: the curated set. */
   references: number;
-  /** The first unanswered interview step, or null when all seven are answered. */
-  nextStep: StepId | null;
-  /** True once the brief is saved: the review screen has been submitted. */
-  reviewed?: boolean;
+  /** The first unanswered interview step, or null when they are all answered. */
+  nextStep: AskedStep | null;
 };
 
 /**
  * The first thing that is still missing. This is where setup reopens.
- *
- * `first-photo` comes after the review screen has been submitted, and it is
- * the last thing in the run. It is deliberately not gated on whether she took
- * the photo: it is a free gift and a skip, not a step she can fail, so once
- * the brief is saved this is where a reopened setup lands and "Skip" is what
- * moves past it.
  */
 export function resumeStage(flow: FlowState): Stage {
   if (!flow.hasSession) return "welcome";
   if (flow.uploads < MIN_PHOTOS) return "photos";
   if (flow.references === 0) return "roles";
   if (flow.nextStep) return flow.nextStep;
-  return flow.reviewed ? "first-photo" : "review";
+  return "review";
 }
 
 export function resumePath(flow: FlowState): string {
@@ -94,7 +85,6 @@ const LABEL: Record<string, string> = {
   photos: "Her face",
   roles: "Her face",
   review: "Check it over",
-  "first-photo": "Her first photo",
 };
 
 export function progressFor(stage: Stage, stepTitle?: string): Progress {

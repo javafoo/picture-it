@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type { ActionState } from "@/app/actions";
 import { createAvatar, getAvatar, primaryAvatar, updateAvatar } from "@/data/avatars";
 import { saveBrief, saveProfile } from "@/data/brand";
 import { deleteMedia, readMedia } from "@/data/media";
@@ -19,7 +18,6 @@ import {
 } from "@/data/onboarding";
 import { type User } from "@/data/users";
 import type { IdentityLock } from "@/identity/build";
-import { startFreePhoto } from "@/jobs/free-photo";
 import { compile } from "@/onboarding/compile";
 import { draftLock, rebuildLock } from "@/onboarding/lock";
 import {
@@ -355,7 +353,7 @@ export async function reviseAnswersAction(_: SetupState, form: FormData): Promis
   });
 }
 
-/** The review screen namespaces its inputs so seven answers can share one form. */
+/** The review screen namespaces its inputs so the answers can share one form. */
 function prefixed(form: FormData, id: StepId): FormData {
   const out = new FormData();
   for (const [key, value] of form.entries()) {
@@ -402,10 +400,7 @@ export async function saveLockAction(_: SetupState, form: FormData): Promise<Set
  * first photo.
  *
  * This no longer finishes setup. The brand profile and the brief are written —
- * which is what `flowStateFor` reads back as "reviewed" — and the run moves to
- * the free photo, which is the last screen. `setOnboarded` is deliberately not
- * called here: it is the write that lets a person out of setup, and calling it
- * before the last screen would have the gate bounce her straight off it.
+ * and this is the write that lets her out of setup, into the Studio.
  */
 export async function finishSetupAction(_: SetupState, form: FormData): Promise<SetupState> {
   const state = await guarded("finishSetupAction", form, async (user) => {
@@ -420,54 +415,13 @@ export async function finishSetupAction(_: SetupState, form: FormData): Promise<
     });
     await saveProfile(user.id, avatarId, profile);
     await saveBrief(user.id, avatarId, brief);
-    await write(user.id, session, { stage: "first-photo" });
-
-    revalidatePath("/", "layout");
-    return "Set up.";
-  });
-  if (state?.ok) redirect(stagePath("first-photo"));
-  return state;
-}
-
-/* ---------------------------------------------------------------------------
-   6. Her first photo: one free generation, then out into the app.
-   ------------------------------------------------------------------------- */
-
-/**
- * Generate the account's one free photo.
- *
- * Thin on purpose: the rules for who may have one, and the order the checks
- * run in, live in `@/jobs/free-photo` because the Library offers the same gift
- * to accounts that were set up before this screen existed, and the two must
- * not be able to disagree.
- */
-export async function generateFirstPhotoAction(_: ActionState, form: FormData): Promise<ActionState> {
-  return guardedAction<{ message: string; jobId: string }, ActionState>(form, {
-    where: "generateFirstPhotoAction",
-    run: async (user, requestId) => {
-      const session = await getSession(user.id);
-      const job = await startFreePhoto(user, { idea: text(form, "idea"), requestId, avatarId: session?.ui.avatarId ?? null });
-      return { message: "Making her first photo. This takes about a minute.", jobId: job.id };
-    },
-    done: (outcome) => ({ ok: true, ...outcome }),
-    failed: (message) => ({ ok: false, message }),
-  });
-}
-
-/**
- * Leave setup for the app.
- *
- * This is the write that lets her out, and it is the same one whether she took
- * the photo or skipped it. Skipping keeps the freebie: it is hers for the
- * lifetime of the account, and the Library offers it again until it is spent.
- */
-export async function openOverviewAction(_: SetupState, form: FormData): Promise<SetupState> {
-  const state = await guarded("openOverviewAction", form, async (user) => {
     await completeSession(user.id);
     await setOnboarded(user.id);
+
     revalidatePath("/", "layout");
     return "Set up.";
   });
-  if (state?.ok) redirect("/");
+  if (state?.ok) redirect("/studio");
   return state;
 }
+

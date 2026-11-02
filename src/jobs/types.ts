@@ -256,6 +256,8 @@ export interface TryOnJobInput {
   modelMediaId?: string;
   /** Where to photograph her first, when no model photo is given. */
   scene?: string;
+  /** A place she typed instead of a scene. Screened before the job starts. */
+  place?: string;
   /** The library folder the look lands in. Checked as hers before it gets here. */
   folderId?: string | null;
 }

@@ -16,14 +16,14 @@ test("the rail lists the daily pages, then the ones set up once", () => {
   const items = navItems(none, false);
   assert.deepEqual(
     items.map((item) => item.label),
-    ["Overview", "Studio", "Your week", "Create", "Hooks", "Library", "Brand", "Model"],
+    ["Overview", "Studio", "Create", "Hooks", "Library", "Brand", "Model"],
   );
   assert.deepEqual([...new Set(items.map((item) => item.group))], ["daily", "setup"]);
 });
 
-test("Reels, Carousels, the old Agent page, Calendar and Brief are not in the menu", () => {
+test("Your week, Reels, Carousels, the old Agent page, Calendar and Brief are not in the menu", () => {
   const hrefs = navItems(none, false).map((item) => item.href);
-  for (const gone of ["/reels", "/carousels", "/agent", "/calendar", "/brief"]) assert.ok(!hrefs.includes(gone), gone);
+  for (const gone of ["/week", "/reels", "/carousels", "/agent", "/calendar", "/brief"]) assert.ok(!hrefs.includes(gone), gone);
 });
 
 test("setup steps carry a dot until setup is finished, and no number", () => {

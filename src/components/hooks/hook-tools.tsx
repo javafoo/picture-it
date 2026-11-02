@@ -36,7 +36,7 @@ export function HookTools({ maxWords }: { maxWords: number }) {
           </label>
           {/* Off writes hooks on any subject, without her niche, offer or story. */}
           <input type="hidden" name="brandAsked" value="1" />
-          <label className="flex min-h-9 items-center gap-2 text-sm text-ink-soft" title="Off: writes without your niche, offer and story.">
+          <label className="flex min-h-9 items-center gap-2 text-sm text-ink-soft" title="Off: writes without your shop, offer and story.">
             <input type="checkbox" name="useBrand" defaultChecked className="size-4 accent-accent" />
             Use my brand
           </label>

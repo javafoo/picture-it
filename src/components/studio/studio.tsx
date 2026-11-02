@@ -11,7 +11,7 @@ import { downscale } from "@/components/library/upload-client";
 import { JobStatus } from "@/components/job-status";
 import { buttonClass, creditWord } from "@/components/ui/button";
 import type { StudioShelves } from "@/data/looks";
-import { MAX_LOOKS_PER_SHOOT, SCENES, SCENE_KEYS, type SceneKey } from "@/tryon/looks";
+import { MAX_LOOKS_PER_SHOOT, MAX_PLACE_CHARS, SCENES, SCENE_KEYS, typedPlace, type SceneKey } from "@/tryon/looks";
 
 /* The Studio: pick a piece, pick where she wears it, get the looks.
 
@@ -27,12 +27,14 @@ export function Studio({ shelves, credits }: { shelves: StudioShelves; credits: 
   const chosen = shelves.pieces.find((item) => item.id === piece);
   const [category, setCategory] = useState<GarmentCategory>((chosen?.category as GarmentCategory) ?? "auto");
   const [scenes, setScenes] = useState<SceneKey[]>(["street", "studio", "golden"]);
+  const [place, setPlace] = useState("");
   const [model, setModel] = useState<string | null>(null);
   const [state, action, pending] = useActionState<StudioState, FormData>(startLooksAction, null);
   const [requestId, setRequestId] = useState(() => crypto.randomUUID());
 
-  const looks = model ? 1 : scenes.length;
-  const total = model ? credits.photo : scenes.length * credits.scene;
+  const typed = typedPlace(place) ? 1 : 0;
+  const looks = model ? 1 : scenes.length + typed;
+  const total = model ? credits.photo : looks * credits.scene;
 
   function pick(id: string) {
     setPiece(id);
@@ -42,7 +44,15 @@ export function Studio({ shelves, credits }: { shelves: StudioShelves; credits: 
 
   function toggleScene(key: SceneKey) {
     setModel(null);
-    setScenes((current) => (current.includes(key) ? current.filter((item) => item !== key) : current.length >= MAX_LOOKS_PER_SHOOT ? current : [...current, key]));
+    setScenes((current) => (current.includes(key) ? current.filter((item) => item !== key) : current.length + typed >= MAX_LOOKS_PER_SHOOT ? current : [...current, key]));
+  }
+
+  /* Three places are picked when the page opens, so typing one has to make room
+     or nobody could use it without untapping a place first. */
+  function typePlace(value: string) {
+    setModel(null);
+    setPlace(value);
+    if (typedPlace(value)) setScenes((current) => current.slice(0, MAX_LOOKS_PER_SHOOT - 1));
   }
 
   return (
@@ -102,6 +112,21 @@ export function Studio({ shelves, credits }: { shelves: StudioShelves; credits: 
               </button>
             ))}
           </div>
+
+          <label className="mt-5 block">
+            <span className="text-2xs tracking-[0.14em] text-muted uppercase">Or type your own place</span>
+            <input
+              type="text"
+              name="place"
+              value={place}
+              onChange={(event) => typePlace(event.target.value)}
+              maxLength={MAX_PLACE_CHARS}
+              placeholder="A rooftop in Lisbon at sunset"
+              autoComplete="off"
+              className="mt-1.5 block w-full border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder:text-muted"
+            />
+            <span className="mt-1.5 block text-xs text-muted">Name the place. She stands facing the camera in every look. It counts as one of your {MAX_LOOKS_PER_SHOOT}.</span>
+          </label>
 
           {shelves.models.length > 0 && (
             <details className="mt-6">

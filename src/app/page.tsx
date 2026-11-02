@@ -6,7 +6,6 @@ import { buttonClass, Card, MediaTile, PageHeader, Section, StepIndicator } from
 import { ArrowIcon } from "@/components/ui/icons";
 import { referenceCount } from "@/data/avatars";
 import { getProfile, profileComplete } from "@/data/brand";
-import { listDrafts } from "@/data/drafts";
 import { listMedia, mediaUrl } from "@/data/media";
 import { requireUser } from "@/data/users";
 import { Landing } from "@/components/home/landing";
@@ -24,34 +23,23 @@ export default async function Home() {
 async function Overview() {
   const user = await requireUser();
   const avatar = await currentAvatar(user.id);
-  const [profile, references, clips, images, drafts, switchable] = await Promise.all([
+  const [profile, references, images, switchable] = await Promise.all([
     getProfile(user.id, avatar?.id ?? null),
     avatar ? referenceCount(user.id, avatar.id) : 0,
-    listMedia(user.id, "clip", { avatarId: avatar?.id, orUnassigned: true }),
     listMedia(user.id, "image", { avatarId: avatar?.id, orUnassigned: true }),
-    listDrafts(user.id, { avatarId: avatar?.id }),
     canSwitchAvatars(user),
   ]);
-  const assembled = drafts.filter((draft) => draft.status !== "draft").length;
 
   const steps = setupSteps({
     profileComplete: profileComplete(profile),
     keyword: profile.keyword,
     references,
-    clips: clips.length,
-    images: images.length,
-    drafts: drafts.length,
-    assembled,
   });
   const complete = setupComplete(steps);
 
   // The newest photo the judge kept, for the card below. Rejected takes are hidden.
   const portrait = images.find((image) => (image.meta as { keep?: boolean }).keep !== false);
-  // The agent needs the brand and her description; from then on it is the quickest way to a reel.
-  const agentReady = profileComplete(profile) && references > 0;
-  /* Once her model and brand exist, the Studio is the next thing to do: the
-     remaining steps (a clip, a draft) are things the Studio makes anyway. */
-  const next = agentReady ? undefined : steps.find((step) => !step.done);
+  const next = steps.find((step) => !step.done);
   const doneCount = steps.filter((step) => step.done).length;
   const name = profile.personaName?.trim() || avatar?.name?.trim() || "Your model";
 
@@ -106,34 +94,22 @@ async function Overview() {
         </Link>
       </Card>
 
-      {agentReady && (
-        <Link href="/create" className="mb-10 block">
-          <Card className="p-5 transition-colors hover:border-ink sm:p-6">
-            <p className="eyebrow text-accent">Or just ask</p>
-            <h2 className="mt-2 font-display text-xl text-ink sm:text-2xl">“Make me a reel about…”</h2>
-            <p className="mt-2 max-w-md text-sm text-muted">
-              Reels, photos and carousels. It says what each step costs before it runs.
-            </p>
-          </Card>
-        </Link>
-      )}
-
       {/* The step list has done its job once every step is done. It is replaced
           by one note, shown until she has read it, and then by nothing: the
           numbers and dots leave the menu at the same moment. */}
       {!complete && (
-        <Section title="The four steps">
+        <Section title="Setup">
           <StepIndicator items={steps} />
         </Section>
       )}
       {complete && !user.setupSeenAt && (
         <Card className="border-good/40 bg-good-soft p-6 sm:p-8" aria-labelledby="setup-done">
-          <p className="eyebrow text-good">All four steps done</p>
+          <p className="eyebrow text-good">Setup done</p>
           <h2 id="setup-done" className="mt-2 font-display text-2xl text-ink sm:text-3xl">
             You are set up.
           </h2>
           <p className="mt-3 max-w-md text-sm text-ink-soft">
-            From here it is the Studio: add a piece and pick where she wears it. The step numbers have left the menu.
+            From here it is the Studio: add a piece and pick where she wears it.
           </p>
           <form action={dismissSetupNoteAction} className="mt-5">
             <button type="submit" className={buttonClass("quiet")}>

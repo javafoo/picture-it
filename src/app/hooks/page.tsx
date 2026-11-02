@@ -95,7 +95,7 @@ function Empty({ filter, query, total }: { filter: HookFilter; query: string; to
   if (total === 0) {
     return (
       <EmptyState title="No hooks yet">
-        Press Write hooks for a batch in your voice, or add one you wrote. Both are free.
+        Press Write hooks for a batch in your shop&rsquo;s voice, or add one you wrote. Both are free.
       </EmptyState>
     );
   }
@@ -117,7 +117,7 @@ function Empty({ filter, query, total }: { filter: HookFilter; query: string; to
     unused: { title: "Every hook has been used", body: "Write a new batch above, or look under Used to make another reel from an old one." },
     used: { title: "Nothing used yet", body: "Press Use on a hook to make a reel or a carousel from it." },
     archived: { title: "Nothing archived", body: "Archive a hook to take it out of your list without deleting it." },
-    all: { title: "No hooks yet", body: "Press Write hooks for a batch in your voice. It is free." },
+    all: { title: "No hooks yet", body: "Press Write hooks for a batch in your shop's voice. It is free." },
   };
   return <EmptyState title={copy[filter].title}>{copy[filter].body}</EmptyState>;
 }

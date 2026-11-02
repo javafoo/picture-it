@@ -28,10 +28,19 @@ export function sceneKey(value: unknown): SceneKey | null {
 /** How many looks one press of the button makes. */
 export const MAX_LOOKS_PER_SHOOT = 3;
 
-/** The idea for the photo the piece is put on. */
-export function modelPhotoIdea(scene: SceneKey): string {
+export const MAX_PLACE_CHARS = 120;
+
+/** A place the seller typed, tidied, or null when there is no usable place in it. */
+export function typedPlace(value: unknown): string | null {
+  const place = String(value ?? "").replace(/\s+/g, " ").trim();
+  return place.length >= 3 && place.length <= MAX_PLACE_CHARS ? place : null;
+}
+
+/** The idea for the photo the piece is put on: at one of our scenes, or a place she typed. */
+export function modelPhotoIdea(at: { scene: SceneKey } | { place: string }): string {
+  const where = "scene" in at ? SCENES[at.scene].where : `in this place: ${at.place}`;
   return [
-    `She stands relaxed with her weight on one leg, facing the camera with a soft natural smile, full length from head to toe, arms loose at her sides, ${SCENES[scene].where}.`,
+    `She stands relaxed with her weight on one leg, facing the camera with a soft natural smile, full length from head to toe, arms loose at her sides, ${where}.`,
     "She wears a plain fitted white T-shirt, slim light-blue jeans and white sneakers.",
     "Her whole body is in the frame and she fills most of it. Nobody else is in the photo.",
   ].join(" ");

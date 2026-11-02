@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 
@@ -12,7 +11,6 @@ import { ResultMessage } from "@/components/ui/message";
 import { NO_FOLDER } from "@/data/folder-rules";
 import { copyNote, copyRefusalNote } from "@/lib/uploads";
 
-import { libraryHref } from "./paths";
 import { TileActions } from "./tile-actions";
 
 /* The grid of one tab.
@@ -64,8 +62,6 @@ export function Gallery({
   items,
   folders,
   kind,
-  /** The folder in the URL, so a link out of here can keep it. */
-  folder,
   copy,
 }: {
   items: GalleryItem[];
@@ -513,18 +509,6 @@ export function Gallery({
               )}
 
               <div className="flex flex-wrap gap-2">
-                {open.kind === "image" ? (
-                  <Link
-                    href={libraryHref("videos", folder ?? (open.folderId ?? undefined), { animate: open.id })}
-                    className={buttonClass("primary", "md")}
-                  >
-                    Animate this photo
-                  </Link>
-                ) : (
-                  <Link href="/create" className={buttonClass("primary", "md")}>
-                    Put a hook on it
-                  </Link>
-                )}
                 <a href={downloadHref(open.id)} download className={buttonClass("quiet", "md")}>
                   <DownloadIcon className="size-4" />
                   Download

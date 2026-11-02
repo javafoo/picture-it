@@ -11,6 +11,11 @@
 export const STEP_IDS = ["audience", "problem", "offer", "story", "proof", "pov", "voice"] as const;
 export type StepId = (typeof STEP_IDS)[number];
 
+/* What a shop is asked. The other steps stay in the data so sessions and brands
+   that already hold those answers keep them, but nothing asks for them now. */
+export const ASKED_STEPS = ["audience", "offer", "voice"] as const satisfies readonly StepId[];
+export type AskedStep = (typeof ASKED_STEPS)[number];
+
 export const STORY_BEATS = ["before", "turn", "now"] as const;
 export type StoryBeat = (typeof STORY_BEATS)[number];
 
@@ -45,8 +50,8 @@ export type Step = {
 export const STEPS: readonly Step[] = [
   {
     id: "audience",
-    title: "Who you talk to",
-    question: "Who are you talking to?",
+    title: "Who buys from you",
+    question: "Who buys from you?",
     help: "One person in one situation, not a category.",
     good:
       "A person you could picture on a Tuesday night: what their week looks like, what they have already tried, what they are afraid of.",

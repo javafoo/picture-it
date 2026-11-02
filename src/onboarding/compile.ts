@@ -2,7 +2,7 @@ import type { Brief, Sourced } from "../brief/build";
 import type { BrandProfile } from "../content/hooks";
 import { languageField } from "../content/languages";
 
-import { STEP_IDS } from "./steps";
+import { ASKED_STEPS } from "./steps";
 import { isComplete, typedMaterial, type Answers, type InterviewState } from "./state";
 
 /* Turning a finished interview into the two things every writer in the app
@@ -78,13 +78,15 @@ export function voiceLine(label: string, is: readonly string[], isNot: readonly 
     .join(" ");
 }
 
-function required(state: InterviewState): Required<Answers> {
-  const { audience, problem, offer, story, proof, pov, voice } = state.answers;
-  if (!audience || !problem || !offer || !story || !proof || !pov || !voice) {
-    const missing = STEP_IDS.filter((id) => !state.answers[id]);
+type Finished = Answers & Required<Pick<Answers, (typeof ASKED_STEPS)[number]>>;
+
+function required(state: InterviewState): Finished {
+  const { audience, offer, voice } = state.answers;
+  if (!audience || !offer || !voice) {
+    const missing = ASKED_STEPS.filter((id) => !state.answers[id]);
     throw new Error(`The setup interview is not finished: ${missing.join(", ")} still unanswered.`);
   }
-  return { audience, problem, offer, story, proof, pov, voice };
+  return { ...state.answers, audience, offer, voice };
 }
 
 /** One word, upper case: what she tells people to comment. */
@@ -98,16 +100,19 @@ export function compile(state: InterviewState, now: string = new Date().toISOStr
   if (!isComplete(state)) required(state);
   const answers = required(state);
   const keyword = keywordOf(answers.offer.keyword);
+  // Older accounts answered these; a new shop is not asked, and the brand simply has less in it.
+  const { story, problem, pov, proof } = answers;
+  const points = proof?.points ?? [];
 
   const profile: BrandProfile = {
     personaName: state.setup.personaName,
-    story: [answers.story.before, answers.story.turn, answers.story.now].map(stop).join(" "),
+    story: story ? [story.before, story.turn, story.now].map(stop).join(" ") : "",
     niche: tidy(state.setup.niche),
     audience: tidy(answers.audience.text),
     offer: tidy(answers.offer.text),
     keyword,
     voice: voiceLine(answers.voice.label, answers.voice.is, answers.voice.isNot),
-    proofPoints: answers.proof.points.map(tidy),
+    proofPoints: points.map(tidy),
     ...languageField(state.setup.language),
   };
 
@@ -115,20 +120,20 @@ export function compile(state: InterviewState, now: string = new Date().toISOStr
     builtAt: now,
     /* The interview is not a document on disk, so there is nothing to go stale. */
     sources: [],
-    oneLiner: sourced(oneLinerText(answers.audience.text, answers.problem.text, answers.offer.text, keyword)),
+    oneLiner: sourced(oneLinerText(answers.audience.text, problem?.text ?? "", answers.offer.text, keyword)),
     audience: lines(answers.audience.text),
-    problem: lines(answers.problem.text),
+    problem: problem ? lines(problem.text) : [],
     offer: [sourced(answers.offer.text), sourced(`They comment ${keyword} to get it.`)],
     story: {
-      before: sourced(answers.story.before),
-      turn: sourced(answers.story.turn),
-      after: sourced(answers.story.now),
+      before: sourced(story?.before ?? ""),
+      turn: sourced(story?.turn ?? ""),
+      after: sourced(story?.now ?? ""),
     },
-    pointOfView: lines(answers.pov.text),
+    pointOfView: pov ? lines(pov.text) : [],
     voiceIs: [sourced(capitalise(answers.voice.label)), ...answers.voice.is.map(sourced)],
     voiceIsNot: answers.voice.isNot.map(sourced),
-    proof: answers.proof.points.map(sourced),
-    positioningLines: positioningTexts(answers.pov.text, answers.offer.text, keyword, answers.proof.points[0]).map(sourced),
+    proof: points.map(sourced),
+    positioningLines: positioningTexts(pov?.text ?? "", answers.offer.text, keyword, points[0]).map(sourced),
     /* One source cannot disagree with itself. */
     conflicts: [],
   };

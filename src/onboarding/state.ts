@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { MAX_PUSHBACKS, STEP_IDS, type StepId } from "./steps";
+import { ASKED_STEPS, MAX_PUSHBACKS, STEP_IDS, type AskedStep, type StepId } from "./steps";
 
 /* The whole interview in one JSON value: it is written to
    `onboarding_sessions.state` after every step, so a session survives a closed
@@ -115,8 +115,8 @@ export function isAnswered(state: InterviewState, id: StepId): boolean {
 }
 
 /** The first unanswered step in order, or null when the interview is done. */
-export function nextStep(state: InterviewState): StepId | null {
-  return STEP_IDS.find((id) => !isAnswered(state, id)) ?? null;
+export function nextStep(state: InterviewState): AskedStep | null {
+  return ASKED_STEPS.find((id) => !isAnswered(state, id)) ?? null;
 }
 
 export function isComplete(state: InterviewState): boolean {
@@ -127,10 +127,10 @@ export function progress(state: InterviewState): {
   done: number;
   total: number;
   ratio: number;
-  current: StepId | null;
+  current: AskedStep | null;
 } {
-  const done = STEP_IDS.filter((id) => isAnswered(state, id)).length;
-  return { done, total: STEP_IDS.length, ratio: done / STEP_IDS.length, current: nextStep(state) };
+  const done = ASKED_STEPS.filter((id) => isAnswered(state, id)).length;
+  return { done, total: ASKED_STEPS.length, ratio: done / ASKED_STEPS.length, current: nextStep(state) };
 }
 
 export function pushbacksLeft(state: InterviewState, id: StepId): number {

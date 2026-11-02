@@ -16,7 +16,7 @@ export default async function WelcomePage() {
 
   return (
     <SetupScreen stage="welcome">
-      <Ask help="About ten minutes, on your phone, and you can stop at any point and come back. Nothing here costs anything.">
+      <Ask help="A few minutes, and you can stop at any point and come back. Nothing here costs anything.">
         Let&rsquo;s set up your model
       </Ask>
 

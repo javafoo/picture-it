@@ -46,7 +46,7 @@ export default async function CreatePage() {
             </Link>
           }
         >
-          The agent writes in your voice from the Brand page and keeps her face from her setup, so both need to be done before it can make anything.
+          The agent writes in your shop&rsquo;s voice from the Brand page and keeps her face from her setup, so both need to be done before it can make anything.
         </EmptyState>
       ) : (
         <>

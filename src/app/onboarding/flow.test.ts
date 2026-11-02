@@ -29,25 +29,16 @@ test("setup reopens at the first thing that is missing", () => {
   assert.equal(resumeStage(flow({ references: 0 })), "roles");
   assert.equal(resumeStage(flow({ nextStep: "offer" })), "offer");
   assert.equal(resumeStage(flow()), "review");
-  // The review screen's only lasting effect is the saved brand profile, and
-  // that is what moves her on to the free photo, which is the last screen.
-  assert.equal(resumeStage(flow({ reviewed: true })), "first-photo");
 });
 
-test("the free photo is the last screen, and an unanswered step still wins over it", () => {
-  /* A brand profile can exist from before setup was reopened to change an
-     answer, so an unanswered step has to beat `reviewed`: otherwise reopening
-     setup would skip the question she came back to answer. */
-  assert.equal(resumeStage(flow({ reviewed: true, nextStep: "proof" })), "proof");
-  assert.equal(resumeStage(flow({ reviewed: true, references: 0 })), "roles");
-  assert.equal(resumeStage(flow({ reviewed: true, uploads: 1 })), "photos");
+test("an unanswered step wins over the review screen", () => {
+  assert.equal(resumeStage(flow({ nextStep: "voice" })), "voice");
+  assert.equal(resumeStage(flow({ references: 0 })), "roles");
+  assert.equal(resumeStage(flow({ uploads: 1 })), "photos");
 });
 
-test("the free photo screen cannot be reached before the review screen is submitted", () => {
-  assert.equal(canVisit("first-photo", flow()), false, "brief not saved yet");
-  assert.equal(canVisit("first-photo", flow({ reviewed: true })), true);
-  // And going back from it is always allowed, like every other screen.
-  assert.equal(canVisit("review", flow({ reviewed: true })), true);
+test("a shop is asked three questions, then the review", () => {
+  assert.deepEqual(STAGES, ["welcome", "photos", "roles", "audience", "offer", "voice", "review"]);
 });
 
 test("a missing session wins over everything else", () => {
@@ -72,12 +63,12 @@ test("a url reads back as the screen it is", () => {
 });
 
 test("going back is allowed, skipping ahead is not", () => {
-  const half = flow({ nextStep: "problem" });
+  const half = flow({ nextStep: "offer" });
   assert.equal(canVisit("welcome", half), true);
   assert.equal(canVisit("photos", half), true);
   assert.equal(canVisit("audience", half), true);
-  assert.equal(canVisit("problem", half), true);
-  assert.equal(canVisit("offer", half), false);
+  assert.equal(canVisit("offer", half), true);
+  assert.equal(canVisit("voice", half), false);
   assert.equal(canVisit("review", half), false);
 });
 
@@ -89,10 +80,8 @@ test("progress counts every screen, and the bar only moves forward", () => {
     assert.equal(progress.total, STAGES.length);
     last = progress.ratio;
   }
-  // The free photo is the last screen, so it is the one that reads as finished.
-  assert.equal(progressFor("first-photo").ratio, 1);
-  assert.ok(progressFor("review").ratio < 1);
-  assert.equal(progressFor("first-photo").label, "Her first photo");
+  // The review is the last screen, so it is the one that reads as finished.
+  assert.equal(progressFor("review").ratio, 1);
   assert.equal(progressFor("welcome").label, "Name her");
   assert.equal(progressFor("audience", "Who you talk to").label, "Who you talk to");
 });
@@ -120,7 +109,7 @@ test("finishing the review screen leaves an account looking exactly like a legac
      that whoever changes that guard knows what it is holding up. */
   assert.equal(alreadySetUp({ hasLock: true, references: 5, brandComplete: true }), true);
   // And the flow still puts such an account on the last screen, not past it.
-  assert.equal(resumeStage(flow({ reviewed: true })), "first-photo");
+  assert.equal(resumeStage(flow()), "review");
 });
 
 test("the gate sends a half-set-up account into setup", () => {

@@ -10,8 +10,6 @@ import { gateDecision, PATHNAME_HEADER } from "@/app/onboarding/flow";
 import { BottomNav, Sidebar, TopBar } from "@/components/nav";
 import { referenceCount, type Avatar } from "@/data/avatars";
 import { getProfile, profileComplete } from "@/data/brand";
-import { listDrafts } from "@/data/drafts";
-import { listMedia } from "@/data/media";
 import { bottomBarItems, navItems, type NavItem } from "@/lib/nav-items";
 import { setupComplete, setupSteps } from "@/lib/setup";
 import { backfillOnboarded, getSession } from "@/data/onboarding";
@@ -34,18 +32,13 @@ export const metadata: Metadata = {
 };
 
 async function steps(user: User, avatar: Avatar | null): Promise<NavItem[]> {
-  const [profile, references, clips, drafts] = await Promise.all([
+  const [profile, references] = await Promise.all([
     getProfile(user.id, avatar?.id ?? null),
     avatar ? referenceCount(user.id, avatar.id) : 0,
-    listMedia(user.id, "clip", { limit: 1, avatarId: avatar?.id, orUnassigned: true }),
-    listDrafts(user.id, { avatarId: avatar?.id }),
   ]);
   const steps = setupSteps({
     profileComplete: profileComplete(profile),
     references,
-    clips: clips.length,
-    drafts: drafts.length,
-    assembled: drafts.filter((draft) => draft.status !== "draft").length,
   });
   const done = (href: string) => steps.find((step) => step.href === href)?.done ?? false;
   return navItems(done, setupComplete(steps));

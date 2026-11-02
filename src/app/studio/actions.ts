@@ -11,7 +11,10 @@ import { startJob } from "@/jobs";
 import { guardedAction } from "@/lib/action-guard";
 import { currentAvatar } from "@/lib/current-avatar";
 import { InvalidRequestError } from "@/lib/errors";
-import { MAX_LOOKS_PER_SHOOT, sceneKey, type SceneKey } from "@/tryon/looks";
+import { refuse } from "@/safety/refusals";
+import { screenSceneIdea } from "@/safety/screen";
+import { withModelSpend } from "@/spend";
+import { MAX_LOOKS_PER_SHOOT, sceneKey, typedPlace, type SceneKey } from "@/tryon/looks";
 
 export type StudioState = { ok: boolean; message: string; jobIds?: string[] } | null;
 
@@ -44,10 +47,18 @@ async function startLooks(user: User, requestId: string, form: FormData) {
     const model = await getMedia(user.id, modelMediaId);
     if (!model || model.kind !== "image" || (model.avatarId && model.avatarId !== avatar.id)) throw new InvalidRequestError("That photo of her is not in your library.");
   }
-  const scenes = [...new Set(form.getAll("scene").map(sceneKey).filter((key): key is SceneKey => key !== null))].slice(0, MAX_LOOKS_PER_SHOOT);
-  if (!modelMediaId && !scenes.length) throw new InvalidRequestError("Pick at least one place to shoot.");
+  const place = modelMediaId ? null : typedPlace(form.get("place"));
+  const scenes = [...new Set(form.getAll("scene").map(sceneKey).filter((key): key is SceneKey => key !== null))].slice(0, MAX_LOOKS_PER_SHOOT - (place ? 1 : 0));
+  if (!modelMediaId && !scenes.length && !place) throw new InvalidRequestError("Pick at least one place to shoot.");
+  // Her own words go into a photo prompt, so they are screened like every other idea she types, before anything is charged.
+  if (place) {
+    const verdict = await withModelSpend(user, { limit: "vision", shape: "screen_idea" }, () => screenSceneIdea(place));
+    if (!verdict.ok) await refuse(user.id, "scene_idea", verdict);
+  }
 
-  const looks = modelMediaId ? [{ key: "photo", input: { modelMediaId } }] : scenes.map((scene) => ({ key: scene, input: { scene } }));
+  const looks = modelMediaId
+    ? [{ key: "photo", input: { modelMediaId } }]
+    : [...scenes.map((scene) => ({ key: scene as string, input: { scene } })), ...(place ? [{ key: "typed", input: { place } }] : [])];
   const jobIds: string[] = [];
   for (const look of looks) {
     // One submission, several jobs: each keeps its own idempotency key under the form's.

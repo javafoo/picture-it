@@ -3,9 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { AnswerForm, type FieldSpec } from "@/components/onboarding/answer-form";
 import { Ask } from "@/components/onboarding/progress";
 import { SetupScreen } from "@/components/onboarding/screen";
-import { Note } from "@/components/ui";
 import { type AnswerValue } from "@/onboarding/state";
-import { step, STEP_IDS, STORY_BEATS, type StepId } from "@/onboarding/steps";
+import { ASKED_STEPS, step, type AskedStep } from "@/onboarding/steps";
 
 import { answerStepAction } from "../../actions";
 import { openStage } from "../../guard";
@@ -17,8 +16,8 @@ export const dynamic = "force-dynamic";
 
 export default async function InterviewStepPage(props: PageProps<"/onboarding/interview/[step]">) {
   const { step: slug } = await props.params;
-  if (!(STEP_IDS as readonly string[]).includes(slug)) notFound();
-  const id = slug as StepId;
+  if (!(ASKED_STEPS as readonly string[]).includes(slug)) notFound();
+  const id = slug as AskedStep;
 
   const { session } = await openStage(id);
   if (!session) redirect("/onboarding");
@@ -28,26 +27,7 @@ export default async function InterviewStepPage(props: PageProps<"/onboarding/in
 
   let fields: FieldSpec[];
 
-  if (id === "story") {
-    const told = answer as AnswerValue<"story"> | undefined;
-    fields = STORY_BEATS.map((beat) => {
-      const field = current.fields!.find((item) => item.id === beat)!;
-      return { id: beat, label: field.question, hint: field.help, placeholder: field.example, rows: 3, value: told?.[beat] ?? "", options: [] };
-    });
-  } else if (id === "proof") {
-    const told = answer as AnswerValue<"proof"> | undefined;
-    fields = [
-      {
-        id: "points",
-        label: "One per line",
-        hint: "Three to five lines is plenty.",
-        placeholder: current.example.split(". ").join(".\n"),
-        rows: 6,
-        value: (told?.points ?? []).join("\n"),
-        options: [],
-      },
-    ];
-  } else if (id === "offer") {
+  if (id === "offer") {
     const told = answer as AnswerValue<"offer"> | undefined;
     const text = current.fields!.find((item) => item.id === "text")!;
     const keyword = current.fields!.find((item) => item.id === "keyword")!;
@@ -71,11 +51,6 @@ export default async function InterviewStepPage(props: PageProps<"/onboarding/in
   return (
     <SetupScreen stage={id}>
       <Ask help={current.help}>{current.question}</Ask>
-      {id === "proof" && (
-        <Note tone="warn" className="mb-5">
-          Nothing this app ever writes will use a number that is not on this list.
-        </Note>
-      )}
       <AnswerForm step={id} fields={fields} action={answerStepAction} />
     </SetupScreen>
   );
